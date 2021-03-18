@@ -150,7 +150,7 @@
     border: 3px solid rgb(128, 0, 128);
   }
   tr:nth-child(even) {
-    background-color: rgba(128, 0, 128, 0.2);
+    background-color: rgba(128, 0, 128, 0.15);
   }
   .odds tr:nth-child(12) {
     border-bottom: 3px solid rgb(128, 0, 128);

@@ -239,11 +239,12 @@ function calculatePlay(
   const cost = costArr.reduce((sum, cost) => sum + (cost ?? 0), 0);
 
   if (cost <= budget) {
-    const naivePoints = naivePointsArr.reduce((sum, points) => sum + points, 0);
-    const weightedPoints = weightedPointsArr.reduce(
-      (sum, points) => sum + points,
-      0
-    );
+    const budgetPoints = (budget - cost) * 0.1;
+    const naivePoints =
+      naivePointsArr.reduce((sum, points) => sum + points, 0) + budgetPoints;
+    const weightedPoints =
+      weightedPointsArr.reduce((sum, points) => sum + points, 0) +
+      budgetPoints / 3;
     return {
       cost,
       naivePoints,
