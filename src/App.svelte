@@ -12,9 +12,35 @@
   $: playsStart = pageSize * (page - 1);
   $: playsEnd = playsStart + pageSize;
   $: pageMax = Math.ceil($playsTable.length / pageSize);
+
+  let sortByWeighted = true;
+  $: sortByNaiveOrWeighted = (
+    { naivePoints: naivePointsA, weightedPoints: weightedPointsA },
+    { naivePoints: naivePointsB, weightedPoints: weightedPointsB }
+  ) =>
+    sortByWeighted
+      ? weightedPointsA < weightedPointsB
+        ? 1
+        : weightedPointsA > weightedPointsB
+        ? -1
+        : 0
+      : naivePointsA < naivePointsB
+      ? 1
+      : naivePointsA > naivePointsB
+      ? -1
+      : 0;
+  $: sortedCostEntries = Object.entries(
+    $costTable
+  ).sort(([driverA, entryA], [driverB, entryB]) =>
+    sortByNaiveOrWeighted(entryA, entryB)
+  );
+  $: sortedPlaysTable = $playsTable.sort(sortByNaiveOrWeighted);
 </script>
 
-<h2>Formula Fun</h2>
+<h1>Formula Fun</h1>
+<div class="sort-by">
+  Sort By Weighted? <input type="checkbox" bind:checked={sortByWeighted} />
+</div>
 <h2>Odds</h2>
 <table class="odds">
   <thead>
@@ -26,9 +52,11 @@
     <th scope="col">Raw Price</th>
     <th scope="col">Adjusted Price</th>
     <th scope="col">Bonus</th>
+    <th scope="col">Points (Naive)</th>
+    <th scope="col">Points (Weighted)</th>
   </thead>
   <tbody>
-    {#each Object.keys($oddsTable) as driver}
+    {#each sortedCostEntries as [driver, costRow]}
       <tr>
         <th scope="row">{driver}</th>
         <td>
@@ -48,10 +76,12 @@
         </td>
         <td>{$percentTable[driver].p_10.toFixed(2)}</td>
         <td>{$percentTable[driver].p_avg.toFixed(2)}</td>
-        <td>&euro;{$costTable[driver].cost}</td>
+        <td>&euro;{costRow.cost}</td>
         <td>
-          {$costTable[driver].bonus ? `x${$costTable[driver].bonus}` : ""}
+          {costRow.bonus ? `x${costRow.bonus}` : ""}
         </td>
+        <td>{costRow.naivePoints.toFixed()}</td>
+        <td>{costRow.weightedPoints.toFixed(2)}</td>
       </tr>
     {/each}
   </tbody>
@@ -69,6 +99,8 @@
       <td />
       <td>{$adjustment.adj_avg.toFixed(2)}</td>
       <td />
+      <td />
+      <td />
     </tr>
   </tfoot>
 </table>
@@ -76,7 +108,7 @@
 <h2>Plays</h2>
 
 <div class="paginator">
-  <button on:click={() => (page = page > 2 ? page - 1 : page)}>&larr;</button>
+  <button on:click={() => (page = page > 1 ? page - 1 : page)}>&larr;</button>
   <div>
     Page <input type="number" bind:value={page} min="1" max={pageMax} /> of {pageMax}
   </div>
@@ -88,14 +120,16 @@
   <thead>
     <th scope="col" style="width:50%;">Drivers</th>
     <th scope="col">Cost</th>
-    <th scope="col">Expected Points</th>
+    <th scope="col">Total Points (Naive)</th>
+    <th scope="col">Total Points (Weighted)</th>
   </thead>
   <tbody>
-    {#each $playsTable.slice(playsStart, playsEnd) as play}
+    {#each sortedPlaysTable.slice(playsStart, playsEnd) as play}
       <tr>
         <td>{play.drivers}</td>
         <td>&euro;{play.cost}</td>
-        <td>{play.points.toFixed(1)}</td>
+        <td>{play.naivePoints.toFixed(1)}</td>
+        <td>{play.weightedPoints.toFixed(1)}</td>
       </tr>
     {/each}
   </tbody>
