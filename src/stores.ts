@@ -7,11 +7,11 @@ import type {
   PercentTable,
   PercentRow,
   CostTable,
-  CostRow,
-  PlaysMap,
   PlaysTable,
   PlaysRow,
   Play,
+  PointsTable,
+  PointsRow,
 } from "./types";
 
 const initialOddsTable: OddsTable = {
@@ -152,6 +152,10 @@ const points = {
   11: 2,
   12: 1,
 };
+const availablePoints = Object.values(points).reduce(
+  (sum, point) => sum + point,
+  0
+);
 function linearMap(
   x1: number,
   y1: number,
@@ -170,183 +174,266 @@ function updateCostTable([$percentTable, { adjAvg }]: [
 ]): CostTable {
   // Use percentages to calculate
   // cost, bonus, and weighted expectation
-  const costEntries: [Driver, CostRow][] = Object.entries($percentTable).map(
-    ([driver, { p1, p3, p6, p10, pAvg }]: [Driver, PercentRow]) => {
+  const costEntries = Object.entries($percentTable).map(
+    ([driver, { pAvg }]: [Driver, PercentRow]) => {
       const cost = Math.round(pAvg / (adjAvg / 100));
-      const bonus = bonusLookup[cost];
-
-      const interpolatedProbabilities = [
-        p1,
-        linearMap(3, p3, 1, p1, 2),
-        p3,
-        linearMap(6, p6, 3, p3, 4),
-        linearMap(6, p6, 3, p3, 5),
-        p6,
-        linearMap(10, p10, 6, p6, 7),
-        linearMap(10, p10, 6, p6, 8),
-        linearMap(10, p10, 6, p6, 9),
-        p10,
-        linearMap(20, 1, 10, p10, 11),
-        linearMap(20, 1, 10, p10, 12),
-      ];
-      const expectedPoints = interpolatedProbabilities.map(
-        (pIndex, index) => ((points[index + 1] * pIndex) / 100) * (bonus ?? 1)
-      );
-      const averageExpectedPoints =
-        expectedPoints.reduce((sum, point) => sum + point, 0) / 12;
-
+      const bonus = bonusLookup[cost] ?? 1;
       return [
         driver,
         {
           cost,
           bonus,
-          naivePoints: NaN,
-          weightedPoints: averageExpectedPoints,
         },
       ];
     }
   );
 
-  // Sort cost to figure out naive expectation
-  costEntries.sort(([driverA, { cost: costA }], [driverB, { cost: costB }]) =>
-    costA < costB ? 1 : costA > costB ? -1 : 0
-  );
-
-  costEntries.forEach(([driver, costRow], index) => {
-    costRow.naivePoints = (points[index + 1] ?? 0) * (costRow.bonus ?? 1);
-  });
-
-  return Object.fromEntries(costEntries) as CostTable;
+  return Object.fromEntries(costEntries);
 }
 
 export const costTable = derived([percentTable, adjustment], updateCostTable);
 
-// Finally, let's see what we can come up with for $100...
+// Now, let's figure out how much each player is worth using our three algorithms!
 
+function updatePointsTable([$percentTable, $costTable]: [
+  PercentTable,
+  CostTable
+]): PointsTable {
+  const pointsTable: { [driver: string]: PointsRow } = {};
+  // What's available cost? stay tuned for Algorithm 2.
+  const availableCost = Object.values($costTable).reduce(
+    (sum, { cost }) => sum + cost,
+    0
+  );
+
+  // Iterate through the cost table and run our three algorithms along the way
+  const costTableEntries = Object.entries($costTable).sort(
+    ([, { cost: costA }], [, { cost: costB }]) => costB - costA
+  );
+  for (const [index, [driver, { cost }]] of costTableEntries.entries()) {
+    // -- Algorithm 1: Rank Algorithm --
+    // where a driver is sorted (by cost) is what they will rank
+    const rankPoints = points[index + 1] ?? 0;
+
+    // -- Algorithm 2: Cost Algorithm --
+    // All points are distributed among the racers
+    // according to how much they cost
+    //
+    // e.g.,
+    // there are 114 points to be had.
+    // all the racers together are worth $488
+    // if Hamilton is worth $72,
+    // he should win about 114 * 72 / 488 = 16.82 points
+    const costPoints = availablePoints * (cost / availableCost);
+
+    // -- Algorithm 3: Odds Algorithm --
+    // From the betting website, we have the following odds:
+    // p(1), p(>=3), p(>=6), and p(>=10)
+    //
+    // Those >= odds together actually form something that looks like
+    // a cumulative distribution function!
+    // With a bit of interpolation and statistics,
+    // we can use that cdf to calculate a probability mass function (pmf),
+    // sometimes called a pdf,
+    // and then use that to calculate an expected value! Yay statistics!
+    const { p1, p3, p6, p10 } = $percentTable[driver];
+    const cumulativeDistributionFunction = [
+      p1,
+      linearMap(3, p3, 1, p1, 2),
+      p3,
+      linearMap(6, p6, 3, p3, 4),
+      linearMap(6, p6, 3, p3, 5),
+      p6,
+      linearMap(10, p10, 6, p6, 7),
+      linearMap(10, p10, 6, p6, 8),
+      linearMap(10, p10, 6, p6, 9),
+      p10,
+      linearMap(20, 1, 10, p10, 11),
+      linearMap(20, 1, 10, p10, 12),
+    ];
+    const probabilityMassFunction = cumulativeDistributionFunction.map(
+      (cpIndex, index, cdf) =>
+        index === 0 ? cpIndex : cpIndex - cdf[index - 1]
+    );
+    const oddsPoints = probabilityMassFunction.reduce(
+      (sum, pIndex, index) => sum + (points[index + 1] * pIndex) / 100,
+      0
+    );
+
+    pointsTable[driver] = {
+      rankPoints,
+      costPoints,
+      oddsPoints,
+    };
+  }
+
+  return pointsTable as PointsTable;
+}
+
+export const pointsTable = derived(
+  [percentTable, costTable],
+  updatePointsTable
+);
+
+// Finally, let's see what we can come up with for $100...
 const budget = 100;
 
 function calculatePlay(
   costArr: number[],
-  naivePointsArr: number[],
-  weightedPointsArr: number[]
+  bonusArr: number[],
+  rankPointsArr: number[],
+  costPointsArr: number[],
+  oddsPointsArr: number[]
 ): Play | undefined {
   const cost = costArr.reduce((sum, cost) => sum + (cost ?? 0), 0);
 
   if (cost <= budget) {
     const budgetPoints = (budget - cost) * 0.1;
-    const naivePoints =
-      naivePointsArr.reduce((sum, points) => sum + points, 0) + budgetPoints;
-    const weightedPoints =
-      weightedPointsArr.reduce((sum, points) => sum + points, 0) +
-      budgetPoints / 3;
+
+    const rankTotal =
+      rankPointsArr.reduce(
+        (sum, points, index) => sum + points + bonusArr[index],
+        0
+      ) + budgetPoints;
+    const costTotal =
+      costPointsArr.reduce(
+        (sum, points, index) => sum + points + bonusArr[index],
+        0
+      ) + budgetPoints;
+    const oddsTotal =
+      oddsPointsArr.reduce(
+        (sum, points, index) => sum + points + bonusArr[index],
+        0
+      ) + budgetPoints;
+
     return {
       cost,
-      naivePoints,
-      weightedPoints,
+      rankPoints: rankTotal,
+      costPoints: costTotal,
+      oddsPoints: oddsTotal,
     };
   }
   return undefined;
 }
 
-function updatePlaysTable($costTable: CostTable): PlaysTable {
+function updatePlaysTable([$costTable, $pointsTable]: [
+  CostTable,
+  PointsTable
+]): PlaysTable {
   // This is a basic knapsack problem, says the internet.
   // When I get around to optimizing, I'll have to look at that.
   //
   // For now, though, I'll just try every combination.
   // This is naive. Please don't judge me.
   // I'm just trying to not prematurely optimize!
-  const playsMap: PlaysMap = new Map();
+  const playsByKey: { [key: string]: Play } = {};
 
-  Object.entries($costTable).forEach(
-    ([
-      driverA,
-      { cost: costA, naivePoints: naiveA, weightedPoints: weightedA },
-    ]: [Driver, CostRow]) => {
-      // Pick 1
-      const aKey = [driverA].sort().join(", ");
-      const aPlay = calculatePlay([costA], [naiveA], [weightedA]);
-      playsMap.set(aKey, aPlay);
+  for (const [driverA, { cost: costA, bonus: bonusA }] of Object.entries(
+    $costTable
+  )) {
+    // pick 1
+    const {
+      rankPoints: rankPointsA,
+      costPoints: costPointsA,
+      oddsPoints: oddsPointsA,
+    } = $pointsTable[driverA];
 
-      Object.entries($costTable).forEach(
-        ([
-          driverB,
-          { cost: costB, naivePoints: naiveB, weightedPoints: weightedB },
-        ]: [Driver, CostRow]) => {
-          // Pick 2
-          if (driverA === driverB) {
-            return;
-          }
-          const abKey = [driverA, driverB].sort().join(", ");
-          if (!playsMap.has(abKey)) {
-            const abPlay = calculatePlay(
-              [costA, costB],
-              [naiveA, naiveB],
-              [weightedA, weightedB]
-            );
-            playsMap.set(abKey, abPlay);
-          }
+    const aKey = [driverA].sort().join(", ");
+    const aPlay = calculatePlay(
+      [costA],
+      [bonusA],
+      [rankPointsA],
+      [costPointsA],
+      [oddsPointsA]
+    );
 
-          Object.entries($costTable).forEach(
-            ([
-              driverC,
-              { cost: costC, naivePoints: naiveC, weightedPoints: weightedC },
-            ]: [Driver, CostRow]) => {
-              // Pick 3
-              if (driverA === driverC || driverB === driverC) {
-                return;
-              }
-              const abcKey = [driverA, driverB, driverC].sort().join(", ");
-              if (!playsMap.has(abcKey)) {
-                const abcPlay = calculatePlay(
-                  [costA, costB, costC],
-                  [naiveA, naiveB, naiveC],
-                  [weightedA, weightedB, weightedC]
-                );
-                playsMap.set(abcKey, abcPlay);
-              }
+    playsByKey[aKey] = aPlay;
 
-              Object.entries($costTable).forEach(
-                ([
-                  driverD,
-                  {
-                    cost: costD,
-                    naivePoints: naiveD,
-                    weightedPoints: weightedD,
-                  },
-                ]: [Driver, CostRow]) => {
-                  // Pick 4
-                  if (
-                    driverA === driverD ||
-                    driverB === driverD ||
-                    driverC === driverD
-                  ) {
-                    return;
-                  }
-                  const abcdKey = [driverA, driverB, driverC, driverD]
-                    .sort()
-                    .join(", ");
-                  if (!playsMap.has(abcdKey)) {
-                    const abcdPlay = calculatePlay(
-                      [costA, costB, costC, costD],
-                      [naiveA, naiveB, naiveC, naiveD],
-                      [weightedA, weightedB, weightedC, weightedD]
-                    );
-                    playsMap.set(abcdKey, abcdPlay);
-                  }
-                }
-              );
-            }
+    for (const [driverB, { cost: costB, bonus: bonusB }] of Object.entries(
+      $costTable
+    )) {
+      // pick 2
+      const {
+        rankPoints: rankPointsB,
+        costPoints: costPointsB,
+        oddsPoints: oddsPointsB,
+      } = $pointsTable[driverB];
+
+      const abKey = [driverA, driverB].sort().join(", ");
+      if (!playsByKey.hasOwnProperty(abKey)) {
+        const abPlay = calculatePlay(
+          [costA, costB],
+          [bonusA, bonusB],
+          [rankPointsA, rankPointsB],
+          [costPointsA, costPointsB],
+          [oddsPointsA, oddsPointsB]
+        );
+
+        playsByKey[abKey] = abPlay;
+      }
+
+      for (const [driverC, { cost: costC, bonus: bonusC }] of Object.entries(
+        $costTable
+      )) {
+        // pick 3
+        if (driverA === driverC || driverB === driverC) continue;
+
+        const {
+          rankPoints: rankPointsC,
+          costPoints: costPointsC,
+          oddsPoints: oddsPointsC,
+        } = $pointsTable[driverC];
+
+        const abcKey = [driverA, driverB, driverC].sort().join(", ");
+        if (!playsByKey.hasOwnProperty(abcKey)) {
+          const abcPlay = calculatePlay(
+            [costA, costB, costC],
+            [bonusA, bonusB, bonusC],
+            [rankPointsA, rankPointsB, rankPointsC],
+            [costPointsA, costPointsB, costPointsC],
+            [oddsPointsA, oddsPointsB, oddsPointsC]
           );
-        }
-      );
-    }
-  );
 
-  const playsTable = [...playsMap]
+          playsByKey[abcKey] = abcPlay;
+        }
+
+        for (const [driverD, { cost: costD, bonus: bonusD }] of Object.entries(
+          $costTable
+        )) {
+          // pick 4
+          if (driverA === driverD || driverB === driverD || driverC === driverD)
+            continue;
+
+          const {
+            rankPoints: rankPointsD,
+            costPoints: costPointsD,
+            oddsPoints: oddsPointsD,
+          } = $pointsTable[driverD];
+
+          const abcdKey = [driverA, driverB, driverC, driverD]
+            .sort()
+            .join(", ");
+          if (!playsByKey.hasOwnProperty(abcdKey)) {
+            const abcdPlay = calculatePlay(
+              [costA, costB, costC, costD],
+              [bonusA, bonusB, bonusC, bonusD],
+              [rankPointsA, rankPointsB, rankPointsC, rankPointsD],
+              [costPointsA, costPointsB, costPointsC, costPointsD],
+              [oddsPointsA, oddsPointsB, oddsPointsC, oddsPointsD]
+            );
+
+            playsByKey[abcKey] = abcdPlay;
+          }
+        }
+      }
+    }
+  }
+
+  const playsTable = Object.entries(playsByKey)
     .filter(([drivers, play]) => typeof play !== "undefined")
     .map(([drivers, play]) => ({ drivers, ...play }));
 
   return playsTable;
 }
 
-export const playsTable = derived(costTable, updatePlaysTable);
+export const playsTable = derived([costTable, pointsTable], updatePlaysTable);

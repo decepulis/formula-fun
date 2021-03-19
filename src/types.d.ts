@@ -49,19 +49,24 @@ export interface Adjustment {
 
 export interface CostRow {
   cost: number;
-  bonus?: number;
-  naivePoints: number;
-  weightedPoints: number;
+  bonus: number;
 }
 
 export type CostTable = Record<Driver, CostRow>;
 
+export interface PointsRow {
+  rankPoints: number;
+  costPoints: number;
+  oddsPoints: number;
+}
+export type PointsTable = Record<Driver, PointsRow>;
+
 export interface Play {
   cost: number;
-  naivePoints: number;
-  weightedPoints: number;
+  rankPoints: number;
+  costPoints: number;
+  oddsPoints: number;
 }
-export type PlaysMap = Map<string, Play>;
 
 export interface PlaysRow extends Play {
   drivers: string;

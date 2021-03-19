@@ -4,6 +4,7 @@
     costTable,
     oddsTable,
     percentTable,
+    pointsTable,
     playsTable,
   } from "./stores";
 
@@ -13,91 +14,54 @@
   $: playsEnd = playsStart + pageSize;
   $: pageMax = Math.ceil($playsTable.length / pageSize);
 
-  let sortByWeighted = true;
-  $: sortByNaiveOrWeighted = (
-    { naivePoints: naivePointsA, weightedPoints: weightedPointsA },
-    { naivePoints: naivePointsB, weightedPoints: weightedPointsB }
-  ) =>
-    sortByWeighted
-      ? weightedPointsA < weightedPointsB
-        ? 1
-        : weightedPointsA > weightedPointsB
-        ? -1
-        : 0
-      : naivePointsA < naivePointsB
-      ? 1
-      : naivePointsA > naivePointsB
-      ? -1
-      : 0;
-  $: sortedCostEntries = Object.entries(
-    $costTable
-  ).sort(([driverA, entryA], [driverB, entryB]) =>
-    sortByNaiveOrWeighted(entryA, entryB)
-  );
-  $: sortedPlaysTable = $playsTable.sort(sortByNaiveOrWeighted);
+  $: drivers = Object.keys($oddsTable);
 </script>
 
 <h1>Formula Fun</h1>
-<div class="sort-by">
-  Sort By Weighted? <input type="checkbox" bind:checked={sortByWeighted} />
-</div>
 <h2>Odds</h2>
 <table class="odds">
   <thead>
     <th scope="col">Driver</th>
-    <th scope="col" colspan="2">Top 1</th>
-    <th scope="col" colspan="2">Top 3</th>
-    <th scope="col" colspan="2">Top 6</th>
-    <th scope="col" colspan="2">Top 10</th>
+    <th scope="col">Top 1</th>
+    <th scope="col">Top 3</th>
+    <th scope="col">Top 6</th>
+    <th scope="col">Top 10</th>
     <th scope="col">Raw Price</th>
     <th scope="col">Adjusted Price</th>
     <th scope="col">Bonus</th>
-    <th scope="col">Points (Naive)</th>
-    <th scope="col">Points (Weighted)</th>
+    <th scope="col">Points (Rank)</th>
+    <th scope="col">Points (Cost)</th>
+    <th scope="col">Points (Odds)</th>
   </thead>
   <tbody>
-    {#each sortedCostEntries as [driver, costRow]}
+    {#each drivers as driver}
       <tr>
         <th scope="row">{driver}</th>
-        <td>
-          <input type="number" bind:value={$oddsTable[driver].o1} />
-        </td>
         <td>{$percentTable[driver].p1.toFixed(2)}</td>
-        <td>
-          <input type="number" bind:value={$oddsTable[driver].o3} />
-        </td>
         <td>{$percentTable[driver].p3.toFixed(2)}</td>
-        <td>
-          <input type="number" bind:value={$oddsTable[driver].o3} />
-        </td>
         <td>{$percentTable[driver].p6.toFixed(2)}</td>
-        <td>
-          <input type="number" bind:value={$oddsTable[driver].o10} />
-        </td>
         <td>{$percentTable[driver].p10.toFixed(2)}</td>
         <td>{$percentTable[driver].pAvg.toFixed(2)}</td>
-        <td>&euro;{costRow.cost}</td>
+        <td>&euro;{$costTable[driver].cost}</td>
         <td>
-          {costRow.bonus ? `x${costRow.bonus}` : ""}
+          {$costTable[driver].bonus ? `x${$costTable[driver].bonus}` : ""}
         </td>
-        <td>{costRow.naivePoints.toFixed()}</td>
-        <td>{costRow.weightedPoints.toFixed(2)}</td>
+        <td>{$pointsTable[driver].rankPoints.toFixed()}</td>
+        <td>{$pointsTable[driver].costPoints.toFixed(2)}</td>
+        <td>{$pointsTable[driver].oddsPoints.toFixed(2)}</td>
       </tr>
     {/each}
   </tbody>
   <tfoot>
     <tr>
       <th scope="row">Adjustments</th>
-      <td />
       <td>{$adjustment.adj1.toFixed(2)}</td>
-      <td />
       <td>{$adjustment.adj3.toFixed(2)}</td>
-      <td />
       <td>{$adjustment.adj6.toFixed(2)}</td>
-      <td />
       <td>{$adjustment.adj10.toFixed(2)}</td>
       <td />
       <td>{$adjustment.adjAvg.toFixed(2)}</td>
+      <td />
       <td />
       <td />
       <td />
@@ -113,23 +77,25 @@
     Page <input type="number" bind:value={page} min="1" max={pageMax} /> of {pageMax}
   </div>
   <button on:click={() => (page = page < pageMax ? page + 1 : page)}
-    >&rarr;</button
-  >
+    >&rarr;
+  </button>
 </div>
 <table class="plays">
   <thead>
     <th scope="col" style="width:50%;">Drivers</th>
     <th scope="col">Cost</th>
-    <th scope="col">Total Points (Naive)</th>
-    <th scope="col">Total Points (Weighted)</th>
+    <th scope="col">Points (Rank)</th>
+    <th scope="col">Points (Cost)</th>
+    <th scope="col">Points (Odds)</th>
   </thead>
   <tbody>
-    {#each sortedPlaysTable.slice(playsStart, playsEnd) as play}
+    {#each $playsTable.slice(playsStart, playsEnd) as play}
       <tr>
         <td>{play.drivers}</td>
         <td>&euro;{play.cost}</td>
-        <td>{play.naivePoints.toFixed(1)}</td>
-        <td>{play.weightedPoints.toFixed(1)}</td>
+        <td>{play.rankPoints.toFixed(1)}</td>
+        <td>{play.costPoints.toFixed(1)}</td>
+        <td>{play.oddsPoints.toFixed(1)}</td>
       </tr>
     {/each}
   </tbody>
