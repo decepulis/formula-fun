@@ -23,28 +23,28 @@ type Odds = number;
 type Percent = number;
 
 export interface OddsRow {
-  o_1: Odds;
-  o_3: Odds;
-  o_6: Odds;
-  o_10: Odds;
+  o1: Odds;
+  o3: Odds;
+  o6: Odds;
+  o10: Odds;
 }
 export type OddsTable = Record<Driver, OddsRow>;
 
 export interface PercentRow {
-  p_1: Percent;
-  p_3: Percent;
-  p_6: Percent;
-  p_10: Percent;
-  p_avg: number;
+  p1: Percent;
+  p3: Percent;
+  p6: Percent;
+  p10: Percent;
+  pAvg: number;
 }
 export type PercentTable = Record<Driver, PercentRow>;
 
 export interface Adjustment {
-  adj_1: number;
-  adj_3: number;
-  adj_6: number;
-  adj_10: number;
-  adj_avg: number;
+  adj1: number;
+  adj3: number;
+  adj6: number;
+  adj10: number;
+  adjAvg: number;
 }
 
 export interface CostRow {

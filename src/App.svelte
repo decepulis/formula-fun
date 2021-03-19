@@ -60,22 +60,22 @@
       <tr>
         <th scope="row">{driver}</th>
         <td>
-          <input type="number" bind:value={$oddsTable[driver].o_1} />
+          <input type="number" bind:value={$oddsTable[driver].o1} />
         </td>
-        <td>{$percentTable[driver].p_1.toFixed(2)}</td>
+        <td>{$percentTable[driver].p1.toFixed(2)}</td>
         <td>
-          <input type="number" bind:value={$oddsTable[driver].o_3} />
+          <input type="number" bind:value={$oddsTable[driver].o3} />
         </td>
-        <td>{$percentTable[driver].p_3.toFixed(2)}</td>
+        <td>{$percentTable[driver].p3.toFixed(2)}</td>
         <td>
-          <input type="number" bind:value={$oddsTable[driver].o_6} />
+          <input type="number" bind:value={$oddsTable[driver].o3} />
         </td>
-        <td>{$percentTable[driver].p_6.toFixed(2)}</td>
+        <td>{$percentTable[driver].p6.toFixed(2)}</td>
         <td>
-          <input type="number" bind:value={$oddsTable[driver].o_10} />
+          <input type="number" bind:value={$oddsTable[driver].o10} />
         </td>
-        <td>{$percentTable[driver].p_10.toFixed(2)}</td>
-        <td>{$percentTable[driver].p_avg.toFixed(2)}</td>
+        <td>{$percentTable[driver].p10.toFixed(2)}</td>
+        <td>{$percentTable[driver].pAvg.toFixed(2)}</td>
         <td>&euro;{costRow.cost}</td>
         <td>
           {costRow.bonus ? `x${costRow.bonus}` : ""}
@@ -89,15 +89,15 @@
     <tr>
       <th scope="row">Adjustments</th>
       <td />
-      <td>{$adjustment.adj_1.toFixed(2)}</td>
+      <td>{$adjustment.adj1.toFixed(2)}</td>
       <td />
-      <td>{$adjustment.adj_3.toFixed(2)}</td>
+      <td>{$adjustment.adj3.toFixed(2)}</td>
       <td />
-      <td>{$adjustment.adj_6.toFixed(2)}</td>
+      <td>{$adjustment.adj6.toFixed(2)}</td>
       <td />
-      <td>{$adjustment.adj_10.toFixed(2)}</td>
+      <td>{$adjustment.adj10.toFixed(2)}</td>
       <td />
-      <td>{$adjustment.adj_avg.toFixed(2)}</td>
+      <td>{$adjustment.adjAvg.toFixed(2)}</td>
       <td />
       <td />
       <td />

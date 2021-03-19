@@ -4,7 +4,6 @@ import type {
   Driver,
   Adjustment,
   OddsTable,
-  OddsRow,
   PercentTable,
   PercentRow,
   CostTable,
@@ -13,31 +12,29 @@ import type {
   PlaysTable,
   PlaysRow,
   Play,
-  ExpectedPointsRow,
-  ExpectedPointsTable,
 } from "./types";
 
 const initialOddsTable: OddsTable = {
-  Hamilton: { o_1: 165, o_3: -500, o_6: -700, o_10: -1000 },
-  Bottas: { o_1: 450, o_3: -400, o_6: -625, o_10: -800 },
-  Verstappen: { o_1: 165, o_3: -300, o_6: -500, o_10: -600 },
-  Perez: { o_1: 700, o_3: 300, o_6: -250, o_10: -400 },
-  Leclerc: { o_1: 6600, o_3: 2800, o_6: 300, o_10: -150 },
-  Sainz: { o_1: 10000, o_3: 4000, o_6: 800, o_10: 120 },
-  Ricciardo: { o_1: 2500, o_3: 800, o_6: 175, o_10: -200 },
-  Norris: { o_1: 3300, o_3: 1600, o_6: 175, o_10: -250 },
-  Stroll: { o_1: 6600, o_3: 1600, o_6: 175, o_10: -250 },
-  Vettel: { o_1: 5000, o_3: 800, o_6: -140, o_10: -300 },
-  Alonso: { o_1: 10000, o_3: 300, o_6: -175, o_10: -400 },
-  Ocon: { o_1: 10000, o_3: 700, o_6: 160, o_10: -280 },
-  Gasly: { o_1: 5000, o_3: 2500, o_6: 200, o_10: -200 },
-  Tsunoda: { o_1: 6600, o_3: 2500, o_6: 275, o_10: -150 },
-  Raikkonnen: { o_1: 25000, o_3: 100000, o_6: 10000, o_10: 400 },
-  Giovinazzi: { o_1: 25000, o_3: 25000, o_6: 10000, o_10: 400 },
-  Schumacher: { o_1: 300000, o_3: 200000, o_6: 10000, o_10: 2000 },
-  Mazepin: { o_1: 300000, o_3: 150000, o_6: 10000, o_10: 900 },
-  Russell: { o_1: 50000, o_3: 3300, o_6: 5000, o_10: 250 },
-  Latifi: { o_1: 200000, o_3: 200000, o_6: 10000, o_10: 2000 },
+  Hamilton: { o1: 165, o3: -500, o6: -700, o10: -1000 },
+  Bottas: { o1: 450, o3: -400, o6: -625, o10: -800 },
+  Verstappen: { o1: 165, o3: -300, o6: -500, o10: -600 },
+  Perez: { o1: 700, o3: 300, o6: -250, o10: -400 },
+  Leclerc: { o1: 6600, o3: 2800, o6: 300, o10: -150 },
+  Sainz: { o1: 10000, o3: 4000, o6: 800, o10: 120 },
+  Ricciardo: { o1: 2500, o3: 800, o6: 175, o10: -200 },
+  Norris: { o1: 3300, o3: 1600, o6: 175, o10: -250 },
+  Stroll: { o1: 6600, o3: 1600, o6: 175, o10: -250 },
+  Vettel: { o1: 5000, o3: 800, o6: -140, o10: -300 },
+  Alonso: { o1: 10000, o3: 300, o6: -175, o10: -400 },
+  Ocon: { o1: 10000, o3: 700, o6: 160, o10: -280 },
+  Gasly: { o1: 5000, o3: 2500, o6: 200, o10: -200 },
+  Tsunoda: { o1: 6600, o3: 2500, o6: 275, o10: -150 },
+  Raikkonnen: { o1: 25000, o3: 100000, o6: 10000, o10: 400 },
+  Giovinazzi: { o1: 25000, o3: 25000, o6: 10000, o10: 400 },
+  Schumacher: { o1: 300000, o3: 200000, o6: 10000, o10: 2000 },
+  Mazepin: { o1: 300000, o3: 150000, o6: 10000, o10: 900 },
+  Russell: { o1: 50000, o3: 3300, o6: 5000, o10: 250 },
+  Latifi: { o1: 200000, o3: 200000, o6: 10000, o10: 2000 },
 };
 
 export const oddsTable = writable(initialOddsTable);
@@ -52,36 +49,33 @@ export const oddsTable = writable(initialOddsTable);
 //
 //
 // Then, that driver's four p(x) are averaged.
-// We'll call that p_avg.
+// We'll call that pAvg.
 //
-// Then, the p_avg is converted into a price.
+// Then, the pAvg is converted into a price.
 //
 // Each p(x) category gets
 // and adjustment score.
 // That score is the sum of all drivers' score_x, divided by x.
-// E.g., adj_3 = sum(p(3)) / 3
-// The four adjustment components are averaged (adj_avg)
+// E.g., adj3 = sum(p(3)) / 3
+// The four adjustment components are averaged (adjAvg)
 //
-// And then each driver gets a price = p_avg/(adj_avg / 100).
+// And then each driver gets a price = pAvg/(adjAvg / 100).
 // That price is the cost!
 
 function updatePercentTable($oddsTable: OddsTable): PercentTable {
   const percentEntries = Object.entries($oddsTable).map(
-    ([driver, { o_1, o_3, o_6, o_10 }]) => {
-      const d_1 =
-        o_1 <= -100 ? 1 - 100 / o_1 : o_1 >= 100 ? 1 + o_1 / 100 : NaN;
-      const p_1 = 100 / d_1;
-      const d_3 =
-        o_3 <= -100 ? 1 - 100 / o_3 : o_3 >= 100 ? 1 + o_3 / 100 : NaN;
-      const p_3 = 100 / d_3;
-      const d_6 =
-        o_6 <= -100 ? 1 - 100 / o_6 : o_6 >= 100 ? 1 + o_6 / 100 : NaN;
-      const p_6 = 100 / d_6;
-      const d_10 =
-        o_10 <= -100 ? 1 - 100 / o_10 : o_10 >= 100 ? 1 + o_10 / 100 : NaN;
-      const p_10 = 100 / d_10;
-      const p_avg = (p_1 + p_3 + p_6 + p_10) / 4;
-      return [driver, { p_1, p_3, p_6, p_10, p_avg }];
+    ([driver, { o1, o3, o6, o10 }]) => {
+      const d1 = o1 <= -100 ? 1 - 100 / o1 : o1 >= 100 ? 1 + o1 / 100 : NaN;
+      const p1 = 100 / d1;
+      const d3 = o3 <= -100 ? 1 - 100 / o3 : o3 >= 100 ? 1 + o3 / 100 : NaN;
+      const p3 = 100 / d3;
+      const d6 = o6 <= -100 ? 1 - 100 / o6 : o6 >= 100 ? 1 + o6 / 100 : NaN;
+      const p6 = 100 / d6;
+      const d10 =
+        o10 <= -100 ? 1 - 100 / o10 : o10 >= 100 ? 1 + o10 / 100 : NaN;
+      const p10 = 100 / d10;
+      const pAvg = (p1 + p3 + p6 + p10) / 4;
+      return [driver, { p1, p3, p6, p10, pAvg }];
     }
   );
   return Object.fromEntries(percentEntries);
@@ -90,37 +84,37 @@ function updatePercentTable($oddsTable: OddsTable): PercentTable {
 export const percentTable = derived(oddsTable, updatePercentTable);
 
 function updateAdjustment($percentTable: PercentTable): Adjustment {
-  const adj_1 = Object.values($percentTable).reduce(
-    (acc, percentRow) => acc + percentRow.p_1,
+  const adj1 = Object.values($percentTable).reduce(
+    (acc, percentRow) => acc + percentRow.p1,
     0
   );
-  const adj_3 =
+  const adj3 =
     (1 / 3) *
     Object.values($percentTable).reduce(
-      (acc, percentRow) => acc + percentRow.p_3,
+      (acc, percentRow) => acc + percentRow.p3,
       0
     );
-  const adj_6 =
+  const adj6 =
     (1 / 6) *
     Object.values($percentTable).reduce(
-      (acc, percentRow) => acc + percentRow.p_6,
+      (acc, percentRow) => acc + percentRow.p6,
       0
     );
-  const adj_10 =
+  const adj10 =
     (1 / 10) *
     Object.values($percentTable).reduce(
-      (acc, percentRow) => acc + percentRow.p_10,
+      (acc, percentRow) => acc + percentRow.p10,
       0
     );
 
-  const adj_avg = (adj_1 + adj_3 + adj_6 + adj_10) / 4;
+  const adjAvg = (adj1 + adj3 + adj6 + adj10) / 4;
 
   return {
-    adj_1,
-    adj_3,
-    adj_6,
-    adj_10,
-    adj_avg,
+    adj1,
+    adj3,
+    adj6,
+    adj10,
+    adjAvg,
   };
 }
 
@@ -170,33 +164,33 @@ function linearMap(
   return m * input + b;
 }
 
-function updateCostTable([$percentTable, { adj_avg }]: [
+function updateCostTable([$percentTable, { adjAvg }]: [
   PercentTable,
   Adjustment
 ]): CostTable {
   // Use percentages to calculate
   // cost, bonus, and weighted expectation
   const costEntries: [Driver, CostRow][] = Object.entries($percentTable).map(
-    ([driver, { p_1, p_3, p_6, p_10, p_avg }]: [Driver, PercentRow]) => {
-      const cost = Math.round(p_avg / (adj_avg / 100));
+    ([driver, { p1, p3, p6, p10, pAvg }]: [Driver, PercentRow]) => {
+      const cost = Math.round(pAvg / (adjAvg / 100));
       const bonus = bonusLookup[cost];
 
       const interpolatedProbabilities = [
-        p_1,
-        linearMap(3, p_3, 1, p_1, 2),
-        p_3,
-        linearMap(6, p_6, 3, p_3, 4),
-        linearMap(6, p_6, 3, p_3, 5),
-        p_6,
-        linearMap(10, p_10, 6, p_6, 7),
-        linearMap(10, p_10, 6, p_6, 8),
-        linearMap(10, p_10, 6, p_6, 9),
-        p_10,
-        linearMap(20, 1, 10, p_10, 11),
-        linearMap(20, 1, 10, p_10, 12),
+        p1,
+        linearMap(3, p3, 1, p1, 2),
+        p3,
+        linearMap(6, p6, 3, p3, 4),
+        linearMap(6, p6, 3, p3, 5),
+        p6,
+        linearMap(10, p10, 6, p6, 7),
+        linearMap(10, p10, 6, p6, 8),
+        linearMap(10, p10, 6, p6, 9),
+        p10,
+        linearMap(20, 1, 10, p10, 11),
+        linearMap(20, 1, 10, p10, 12),
       ];
       const expectedPoints = interpolatedProbabilities.map(
-        (p_idx, idx) => ((points[idx + 1] * p_idx) / 100) * (bonus ?? 1)
+        (pIndex, index) => ((points[index + 1] * pIndex) / 100) * (bonus ?? 1)
       );
       const averageExpectedPoints =
         expectedPoints.reduce((sum, point) => sum + point, 0) / 12;
