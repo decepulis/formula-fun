@@ -10,6 +10,7 @@
 
     "naive": "node ./validate/validateNaive.js",
     "cost": "node ./validate/validateCostWeighted.js",
+    "odds": "node ./validate/validateOddsWeighted.js",
     "optimal": "node ./validate/calculateOptimal.js"
   },
   "devDependencies": {

@@ -169,10 +169,14 @@ function calculatePlays(drivers) {
 }
 // For every race...
 const p1 = [];
-const p3 = [];
-const p5 = [];
-const p10 = [];
-const p25 = [];
+const p3AvgArr = [];
+const p3MaxArr = [];
+const p5AvgArr = [];
+const p5MaxArr = [];
+const p10AvgArr = [];
+const p10MaxArr = [];
+const p25AvgArr = [];
+const p25MaxArr = [];
 for (const [race, { scores, drivers }] of Object.entries(season)) {
   // calculate plays
   const plays = calculatePlays(drivers);
@@ -182,50 +186,90 @@ for (const [race, { scores, drivers }] of Object.entries(season)) {
 
   const p1Avg = plays[0].actualPoints;
 
+  const p3Max = Math.max(...plays.slice(0, 3).map((play) => play.actualPoints));
   const p3Avg =
     plays.slice(0, 3).reduce((sum, { actualPoints }) => sum + actualPoints, 0) /
     3;
+  const p5Max = Math.max(...plays.slice(0, 5).map((play) => play.actualPoints));
   const p5Avg =
     plays.slice(0, 5).reduce((sum, { actualPoints }) => sum + actualPoints, 0) /
     5;
+  const p10Max = Math.max(
+    ...plays.slice(0, 10).map((play) => play.actualPoints)
+  );
   const p10Avg =
     plays
       .slice(0, 10)
       .reduce((sum, { actualPoints }) => sum + actualPoints, 0) / 10;
+  const p25Max = Math.max(
+    ...plays.slice(0, 25).map((play) => play.actualPoints)
+  );
   const p25Avg =
     plays
       .slice(0, 25)
       .reduce((sum, { actualPoints }) => sum + actualPoints, 0) / 25;
 
   const sortNum = (a, b) => a - b;
-  const p1Rank = [p1Avg, ...scores].sort(sortNum).reverse().indexOf(p1Avg) + 1;
-  const p3Rank = [p3Avg, ...scores].sort(sortNum).reverse().indexOf(p3Avg) + 1;
-  const p5Rank = [p5Avg, ...scores].sort(sortNum).reverse().indexOf(p5Avg) + 1;
-  const p10Rank =
-    [p10Avg, ...scores].sort(sortNum).reverse().indexOf(p10Avg) + 1;
-  const p25Rank =
-    [p25Avg, ...scores].sort(sortNum).reverse().indexOf(p25Avg) + 1;
+  const p1Rank =
+    ([p1Avg, ...scores].sort(sortNum).reverse().indexOf(p1Avg) + 1) /
+    (scores.length + 2);
+  const p3AvgRank =
+    ([p3Avg, ...scores].sort(sortNum).reverse().indexOf(p3Avg) + 1) /
+    (scores.length + 2);
+  const p3MaxRank =
+    ([p3Max, ...scores].sort(sortNum).reverse().indexOf(p3Max) + 1) /
+    (scores.length + 2);
+  const p5AvgRank =
+    ([p5Avg, ...scores].sort(sortNum).reverse().indexOf(p5Avg) + 1) /
+    (scores.length + 2);
+  const p5MaxRank =
+    ([p5Max, ...scores].sort(sortNum).reverse().indexOf(p5Max) + 1) /
+    (scores.length + 2);
+  const p10AvgRank =
+    ([p10Avg, ...scores].sort(sortNum).reverse().indexOf(p10Avg) + 1) /
+    (scores.length + 2);
+  const p10MaxRank =
+    ([p10Max, ...scores].sort(sortNum).reverse().indexOf(p10Max) + 1) /
+    (scores.length + 2);
+  const p25AvgRank =
+    ([p25Avg, ...scores].sort(sortNum).reverse().indexOf(p25Avg) + 1) /
+    (scores.length + 2);
+  const p25MaxRank =
+    ([p25Max, ...scores].sort(sortNum).reverse().indexOf(p25Max) + 1) /
+    (scores.length + 2);
 
   p1.push(p1Rank);
-  p3.push(p3Rank);
-  p5.push(p5Rank);
-  p10.push(p10Rank);
-  p25.push(p25Rank);
+  p3AvgArr.push(p3AvgRank);
+  p3MaxArr.push(p3MaxRank);
+  p5AvgArr.push(p5AvgRank);
+  p5MaxArr.push(p5MaxRank);
+  p10AvgArr.push(p10AvgRank);
+  p10MaxArr.push(p10MaxRank);
+  p25AvgArr.push(p25AvgRank);
+  p25MaxArr.push(p25MaxRank);
 
   console.log("results");
   console.table({
     p1Rank,
-    p3Rank,
-    p5Rank,
-    p10Rank,
-    p25Rank,
+    p3AvgRank,
+    p3MaxRank,
+    p5AvgRank,
+    p5MaxRank,
+    p10AvgRank,
+    p10MaxRank,
+    p25AvgRank,
+    p25MaxRank,
   });
 }
 
 console.table({
   p1: p1.reduce((sum, points) => sum + points, 0) / p1.length,
-  p3: p3.reduce((sum, points) => sum + points, 0) / p3.length,
-  p5: p5.reduce((sum, points) => sum + points, 0) / p5.length,
-  p10: p10.reduce((sum, points) => sum + points, 0) / p10.length,
-  p25: p25.reduce((sum, points) => sum + points, 0) / p25.length,
+  p3Avg: p3AvgArr.reduce((sum, points) => sum + points, 0) / p3AvgArr.length,
+  p3Max: p3MaxArr.reduce((sum, points) => sum + points, 0) / p3MaxArr.length,
+  p5Avg: p5AvgArr.reduce((sum, points) => sum + points, 0) / p5AvgArr.length,
+  p5Max: p5MaxArr.reduce((sum, points) => sum + points, 0) / p5MaxArr.length,
+  p10Avg: p10AvgArr.reduce((sum, points) => sum + points, 0) / p10AvgArr.length,
+  p10Max: p10MaxArr.reduce((sum, points) => sum + points, 0) / p10MaxArr.length,
+  p25Avg: p25AvgArr.reduce((sum, points) => sum + points, 0) / p25AvgArr.length,
+  p25Max: p25MaxArr.reduce((sum, points) => sum + points, 0) / p25MaxArr.length,
 });

@@ -121,10 +121,5 @@ for (const [race, { drivers }] of Object.entries(season)) {
   // calculate plays
   const plays = calculatePlays(drivers);
   console.log(race);
-  console.log(
-    plays
-      .slice(0, 25)
-      .map((play) => Object.values(play).join(","))
-      .forEach((play) => console.log(play))
-  );
+  console.table(plays.slice(0, 25));
 }
