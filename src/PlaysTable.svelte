@@ -11,17 +11,17 @@
       formatter: (value: number) => `€${value}`,
     },
     {
-      label: "Rank Strategy",
+      label: "Rank Strat",
       accessor: "rankPoints",
       formatter: (value: number) => value.toFixed(2),
     },
     {
-      label: "Cost Strategy",
+      label: "Cost Strat",
       accessor: "costPoints",
       formatter: (value: number) => value.toFixed(2),
     },
     {
-      label: "Odds Strategy",
+      label: "Odds Strat",
       accessor: "oddsPoints",
       formatter: (value: number) => value.toFixed(2),
       defaultSort: true,
@@ -30,4 +30,4 @@
 </script>
 
 <h2>Plays</h2>
-<Table {columns} rows={$playsTable} pageSize={25} />
+<Table {columns} rows={$playsTable} pageSize={50} />
