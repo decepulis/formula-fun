@@ -19,12 +19,12 @@
       label: "Cost Strat",
       accessor: "costPoints",
       formatter: (value: number) => value.toFixed(2),
+      defaultSort: true,
     },
     {
       label: "Odds Strat",
       accessor: "oddsPoints",
       formatter: (value: number) => value.toFixed(2),
-      defaultSort: true,
     },
   ];
 </script>
