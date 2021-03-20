@@ -206,15 +206,7 @@ function calculatePlays(drivers) {
   return plays;
 }
 // For every race...
-const p1 = [];
-const p3AvgArr = [];
-const p3MaxArr = [];
-const p5AvgArr = [];
-const p5MaxArr = [];
-const p10AvgArr = [];
-const p10MaxArr = [];
-const p25AvgArr = [];
-const p25MaxArr = [];
+const deltas = [];
 for (const [race, { scores, drivers }] of Object.entries(season)) {
   // calculate plays
   const plays = calculatePlays(drivers);
@@ -222,92 +214,15 @@ for (const [race, { scores, drivers }] of Object.entries(season)) {
   console.log("picks");
   console.table(plays.slice(0, 3));
 
-  const p1Avg = plays[0].actualPoints;
-
-  const p3Max = Math.max(...plays.slice(0, 3).map((play) => play.actualPoints));
-  const p3Avg =
-    plays.slice(0, 3).reduce((sum, { actualPoints }) => sum + actualPoints, 0) /
-    3;
-  const p5Max = Math.max(...plays.slice(0, 5).map((play) => play.actualPoints));
-  const p5Avg =
-    plays.slice(0, 5).reduce((sum, { actualPoints }) => sum + actualPoints, 0) /
-    5;
-  const p10Max = Math.max(
-    ...plays.slice(0, 10).map((play) => play.actualPoints)
+  const raceDeltas = plays.map(({ predictedPoints, actualPoints }) =>
+    Math.abs(actualPoints - predictedPoints)
   );
-  const p10Avg =
-    plays
-      .slice(0, 10)
-      .reduce((sum, { actualPoints }) => sum + actualPoints, 0) / 10;
-  const p25Max = Math.max(
-    ...plays.slice(0, 25).map((play) => play.actualPoints)
-  );
-  const p25Avg =
-    plays
-      .slice(0, 25)
-      .reduce((sum, { actualPoints }) => sum + actualPoints, 0) / 25;
 
-  const sortNum = (a, b) => a - b;
-  const p1Rank =
-    ([p1Avg, ...scores].sort(sortNum).reverse().indexOf(p1Avg) + 1) /
-    (scores.length + 2);
-  const p3AvgRank =
-    ([p3Avg, ...scores].sort(sortNum).reverse().indexOf(p3Avg) + 1) /
-    (scores.length + 2);
-  const p3MaxRank =
-    ([p3Max, ...scores].sort(sortNum).reverse().indexOf(p3Max) + 1) /
-    (scores.length + 2);
-  const p5AvgRank =
-    ([p5Avg, ...scores].sort(sortNum).reverse().indexOf(p5Avg) + 1) /
-    (scores.length + 2);
-  const p5MaxRank =
-    ([p5Max, ...scores].sort(sortNum).reverse().indexOf(p5Max) + 1) /
-    (scores.length + 2);
-  const p10AvgRank =
-    ([p10Avg, ...scores].sort(sortNum).reverse().indexOf(p10Avg) + 1) /
-    (scores.length + 2);
-  const p10MaxRank =
-    ([p10Max, ...scores].sort(sortNum).reverse().indexOf(p10Max) + 1) /
-    (scores.length + 2);
-  const p25AvgRank =
-    ([p25Avg, ...scores].sort(sortNum).reverse().indexOf(p25Avg) + 1) /
-    (scores.length + 2);
-  const p25MaxRank =
-    ([p25Max, ...scores].sort(sortNum).reverse().indexOf(p25Max) + 1) /
-    (scores.length + 2);
-
-  p1.push(p1Rank);
-  p3AvgArr.push(p3AvgRank);
-  p3MaxArr.push(p3MaxRank);
-  p5AvgArr.push(p5AvgRank);
-  p5MaxArr.push(p5MaxRank);
-  p10AvgArr.push(p10AvgRank);
-  p10MaxArr.push(p10MaxRank);
-  p25AvgArr.push(p25AvgRank);
-  p25MaxArr.push(p25MaxRank);
-
-  console.log("results");
-  console.table({
-    p1Rank,
-    p3AvgRank,
-    p3MaxRank,
-    p5AvgRank,
-    p5MaxRank,
-    p10AvgRank,
-    p10MaxRank,
-    p25AvgRank,
-    p25MaxRank,
-  });
+  deltas.push(...raceDeltas);
 }
 
-console.table({
-  p1: p1.reduce((sum, points) => sum + points, 0) / p1.length,
-  p3Avg: p3AvgArr.reduce((sum, points) => sum + points, 0) / p3AvgArr.length,
-  p3Max: p3MaxArr.reduce((sum, points) => sum + points, 0) / p3MaxArr.length,
-  p5Avg: p5AvgArr.reduce((sum, points) => sum + points, 0) / p5AvgArr.length,
-  p5Max: p5MaxArr.reduce((sum, points) => sum + points, 0) / p5MaxArr.length,
-  p10Avg: p10AvgArr.reduce((sum, points) => sum + points, 0) / p10AvgArr.length,
-  p10Max: p10MaxArr.reduce((sum, points) => sum + points, 0) / p10MaxArr.length,
-  p25Avg: p25AvgArr.reduce((sum, points) => sum + points, 0) / p25AvgArr.length,
-  p25Max: p25MaxArr.reduce((sum, points) => sum + points, 0) / p25MaxArr.length,
-});
+const deltaMax = Math.max(...deltas);
+const deltaMean = deltas.reduce((sum, delta) => sum + delta, 0) / deltas.length;
+const deltaMin = Math.min(...deltas);
+
+console.table({ deltaMax, deltaMean, deltaMin });
