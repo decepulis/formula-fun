@@ -55,7 +55,8 @@
   <div class="paginator">
     <button on:click={() => (page = page > 1 ? page - 1 : page)}>&larr;</button>
     <div>
-      Page <input type="number" bind:value={page} min="1" max={pageMax} /> of {pageMax}
+      Page <input type="number" bind:value={page} min="1" max={pageMax} />
+      of&nbsp;{pageMax}
     </div>
     <button on:click={() => (page = page < pageMax ? page + 1 : page)}
       >&rarr;
@@ -104,6 +105,10 @@
     border: 3px solid hsl(300, 100%, 25%);
     border-top: none;
   }
+  table * {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   tr:nth-child(even) {
     background-color: hsla(300, 100%, 25%, 0.15);
   }
@@ -122,14 +127,13 @@
     display: grid;
     align-items: center;
     text-align: center;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 2fr 1fr;
   }
 
   .sort-header {
     padding: 0;
   }
   .sort-button {
-    display: inline-block;
     border: none;
     padding: 0.4rem 0.2rem;
     margin: 0;
@@ -144,14 +148,17 @@
 
     width: 100%;
     text-align: inherit;
+
+    display: grid;
+    grid-template-columns: 1.5ch auto;
+    gap: 0.2rem;
+    align-items: center;
   }
   .sort-button:active {
     background: hsl(300, 100%, 15%);
   }
   .sort-button:before {
     content: "\25B7";
-    display: inline-block;
-    margin-right: 1ch;
     transition: transform 0.2s ease-in-out;
   }
   .sort-button.active:before {
