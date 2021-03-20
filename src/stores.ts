@@ -353,6 +353,8 @@ function updatePlaysTable([$costTable, $pointsTable]: [
       $costTable
     )) {
       // pick 2
+      if (driverA === driverB) continue;
+
       const {
         rankPoints: rankPointsB,
         costPoints: costPointsB,
