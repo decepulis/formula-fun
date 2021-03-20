@@ -8,10 +8,10 @@ import type {
   PercentRow,
   CostTable,
   PlaysTable,
-  PlaysRow,
   Play,
   PointsTable,
   PointsRow,
+  PredictionTable,
 } from "./types";
 
 const initialOddsTable: OddsTable = {
@@ -193,11 +193,17 @@ function updateCostTable([$percentTable, { adjAvg }]: [
 
 export const costTable = derived([percentTable, adjustment], updateCostTable);
 
-// Now, let's figure out how much each player is worth using our three algorithms!
+const initialPredictionTable = Object.fromEntries(
+  Object.keys(initialOddsTable).map((driver, index) => [driver, 0])
+);
 
-function updatePointsTable([$percentTable, $costTable]: [
-  PercentTable,
-  CostTable
+export const predictionTable = writable(initialPredictionTable);
+
+// Now, let's figure out how much each player is worth using our three algorithms!
+function updatePointsTable([$predictionTable, $costTable, $percentTable]: [
+  PredictionTable,
+  CostTable,
+  PercentTable
 ]): PointsTable {
   const pointsTable: { [driver: string]: PointsRow } = {};
   // What's available cost? stay tuned for Algorithm 2.
@@ -207,13 +213,10 @@ function updatePointsTable([$percentTable, $costTable]: [
   );
 
   // Iterate through the cost table and run our three algorithms along the way
-  const costTableEntries = Object.entries($costTable).sort(
-    ([, { cost: costA }], [, { cost: costB }]) => costB - costA
-  );
-  for (const [index, [driver, { cost }]] of costTableEntries.entries()) {
+  for (const driver of Object.keys($predictionTable)) {
     // -- Algorithm 1: Rank Algorithm --
-    // where a driver is sorted (by cost) is what they will rank
-    const rankPoints = points[index + 1] ?? 0;
+    // We just let the user input what they think the driver's gonna get
+    const predictionPoints = $predictionTable[driver];
 
     // -- Algorithm 2: Cost Algorithm --
     // All points are distributed among the racers
@@ -224,6 +227,7 @@ function updatePointsTable([$percentTable, $costTable]: [
     // all the racers together are worth $488
     // if Hamilton is worth $72,
     // he should win about 114 * 72 / 488 = 16.82 points
+    const { cost } = $costTable[driver];
     const costPoints = availablePoints * (cost / availableCost);
 
     // -- Algorithm 3: Odds Algorithm --
@@ -261,7 +265,7 @@ function updatePointsTable([$percentTable, $costTable]: [
     );
 
     pointsTable[driver] = {
-      rankPoints,
+      predictionPoints,
       costPoints,
       oddsPoints,
     };
@@ -271,7 +275,7 @@ function updatePointsTable([$percentTable, $costTable]: [
 }
 
 export const pointsTable = derived(
-  [percentTable, costTable],
+  [predictionTable, costTable, percentTable],
   updatePointsTable
 );
 
@@ -281,7 +285,7 @@ const budget = 100;
 function calculatePlay(
   costArr: number[],
   bonusArr: number[],
-  rankPointsArr: number[],
+  predictionPointsArr: number[],
   costPointsArr: number[],
   oddsPointsArr: number[]
 ): Play | undefined {
@@ -290,25 +294,28 @@ function calculatePlay(
   if (cost <= budget) {
     const budgetPoints = (budget - cost) * 0.1;
 
-    const rankTotal =
-      rankPointsArr.reduce(
-        (sum, points, index) => sum + points + bonusArr[index],
+    const predictionTotal =
+      budgetPoints +
+      predictionPointsArr.reduce(
+        (sum, points, index) => sum + points * bonusArr[index],
         0
-      ) + budgetPoints;
+      );
     const costTotal =
+      budgetPoints +
       costPointsArr.reduce(
-        (sum, points, index) => sum + points + bonusArr[index],
+        (sum, points, index) => sum + points * bonusArr[index],
         0
-      ) + budgetPoints;
+      );
     const oddsTotal =
+      budgetPoints +
       oddsPointsArr.reduce(
-        (sum, points, index) => sum + points + bonusArr[index],
+        (sum, points, index) => sum + points * bonusArr[index],
         0
-      ) + budgetPoints;
+      );
 
     return {
       cost,
-      rankPoints: rankTotal,
+      predictionPoints: predictionTotal,
       costPoints: costTotal,
       oddsPoints: oddsTotal,
     };
@@ -333,7 +340,7 @@ function updatePlaysTable([$costTable, $pointsTable]: [
   )) {
     // pick 1
     const {
-      rankPoints: rankPointsA,
+      predictionPoints: predictionPointsA,
       costPoints: costPointsA,
       oddsPoints: oddsPointsA,
     } = $pointsTable[driverA];
@@ -342,7 +349,7 @@ function updatePlaysTable([$costTable, $pointsTable]: [
     const aPlay = calculatePlay(
       [costA],
       [bonusA],
-      [rankPointsA],
+      [predictionPointsA],
       [costPointsA],
       [oddsPointsA]
     );
@@ -356,7 +363,7 @@ function updatePlaysTable([$costTable, $pointsTable]: [
       if (driverA === driverB) continue;
 
       const {
-        rankPoints: rankPointsB,
+        predictionPoints: predictionPointsB,
         costPoints: costPointsB,
         oddsPoints: oddsPointsB,
       } = $pointsTable[driverB];
@@ -366,7 +373,7 @@ function updatePlaysTable([$costTable, $pointsTable]: [
         const abPlay = calculatePlay(
           [costA, costB],
           [bonusA, bonusB],
-          [rankPointsA, rankPointsB],
+          [predictionPointsA, predictionPointsB],
           [costPointsA, costPointsB],
           [oddsPointsA, oddsPointsB]
         );
@@ -381,7 +388,7 @@ function updatePlaysTable([$costTable, $pointsTable]: [
         if (driverA === driverC || driverB === driverC) continue;
 
         const {
-          rankPoints: rankPointsC,
+          predictionPoints: predictionPointsC,
           costPoints: costPointsC,
           oddsPoints: oddsPointsC,
         } = $pointsTable[driverC];
@@ -391,7 +398,7 @@ function updatePlaysTable([$costTable, $pointsTable]: [
           const abcPlay = calculatePlay(
             [costA, costB, costC],
             [bonusA, bonusB, bonusC],
-            [rankPointsA, rankPointsB, rankPointsC],
+            [predictionPointsA, predictionPointsB, predictionPointsC],
             [costPointsA, costPointsB, costPointsC],
             [oddsPointsA, oddsPointsB, oddsPointsC]
           );
@@ -407,7 +414,7 @@ function updatePlaysTable([$costTable, $pointsTable]: [
             continue;
 
           const {
-            rankPoints: rankPointsD,
+            predictionPoints: predictionPointsD,
             costPoints: costPointsD,
             oddsPoints: oddsPointsD,
           } = $pointsTable[driverD];
@@ -419,7 +426,12 @@ function updatePlaysTable([$costTable, $pointsTable]: [
             const abcdPlay = calculatePlay(
               [costA, costB, costC, costD],
               [bonusA, bonusB, bonusC, bonusD],
-              [rankPointsA, rankPointsB, rankPointsC, rankPointsD],
+              [
+                predictionPointsA,
+                predictionPointsB,
+                predictionPointsC,
+                predictionPointsD,
+              ],
               [costPointsA, costPointsB, costPointsC, costPointsD],
               [oddsPointsA, oddsPointsB, oddsPointsC, oddsPointsD]
             );

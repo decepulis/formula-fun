@@ -21,6 +21,7 @@ type Driver =
   | "Latifi";
 type Odds = number;
 type Percent = number;
+type ExpectedPoints = number;
 
 export interface OddsRow {
   o1: Odds;
@@ -54,8 +55,10 @@ export interface CostRow {
 
 export type CostTable = Record<Driver, CostRow>;
 
+export type PredictionTable = Record<Driver, ExpectedPoints>;
+
 export interface PointsRow {
-  rankPoints: number;
+  predictionPoints: number;
   costPoints: number;
   oddsPoints: number;
 }
@@ -63,7 +66,7 @@ export type PointsTable = Record<Driver, PointsRow>;
 
 export interface Play {
   cost: number;
-  rankPoints: number;
+  predictionPoints: number;
   costPoints: number;
   oddsPoints: number;
 }

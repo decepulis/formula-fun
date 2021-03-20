@@ -11,8 +11,8 @@
       formatter: (value: number) => `€${value}`,
     },
     {
-      label: "Rank Strat",
-      accessor: "rankPoints",
+      label: "Prediction Strat",
+      accessor: "predictionPoints",
       formatter: (value: number) => value.toFixed(2),
     },
     {

@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { costTable, pointsTable, oddsTable } from "./stores";
+  import { costTable, pointsTable, oddsTable, predictionTable } from "./stores";
   import Table from "./Table.svelte";
-  import type { CostRow, PercentRow, PointsRow } from "./types";
+  import type { CostRow, ExpectedPoints, InputProps, PointsRow } from "./types";
 
   interface TableRow {
     driver: string;
     cost: CostRow["cost"];
     bonus: CostRow["bonus"];
-    rankPoints: PointsRow["rankPoints"];
+    predictionPoints: InputProps;
     costPoints: PointsRow["costPoints"];
     oddsPoints: PointsRow["oddsPoints"];
   }
@@ -17,12 +17,16 @@
     driver,
     cost: $costTable[driver].cost,
     bonus: $costTable[driver].bonus,
-    rankPoints: $pointsTable[driver].rankPoints,
+    predictionPoints: {
+      type: "number",
+      value: $predictionTable[driver],
+      onChange: (e) => ($predictionTable[driver] = parseInt(e.target.value)),
+    },
     costPoints: $pointsTable[driver].costPoints,
     oddsPoints: $pointsTable[driver].oddsPoints,
   }));
   const columns = [
-    { label: "Driver", accessor: "driver", colScope: true },
+    { label: "Driver", accessor: "driver" },
     {
       label: "Cost",
       accessor: "cost",
@@ -34,9 +38,9 @@
       formatter: (value: number) => `x${value}`,
     },
     {
-      label: "Rank Strat",
-      accessor: "rankPoints",
-      formatter: (value: number) => value.toFixed(),
+      label: "Prediction Strat",
+      accessor: "predictionPoints",
+      input: true,
     },
     {
       label: "Cost Strat",
@@ -53,4 +57,4 @@
 </script>
 
 <h2>Odds</h2>
-<Table {rows} {columns} />
+<Table bind:rows {columns} />

@@ -1,4 +1,7 @@
 <script lang="ts">
+  import App from "./App.svelte";
+  import { predictionTable } from "./stores";
+
   import type { Row, Column } from "./types";
 
   export let rows: Array<Row>;
@@ -33,8 +36,8 @@
     if (typeof sortColumn !== "undefined") {
       const { accessor } = sortColumn;
       sortedRowSlice.sort((rowA, rowB) => {
-        const valueA = rowA[accessor];
-        const valueB = rowB[accessor];
+        const valueA = rowA[accessor].value ?? rowA[accessor];
+        const valueB = rowB[accessor].value ?? rowB[accessor];
         return valueA < valueB
           ? sortOrderDescending
             ? 1
@@ -53,13 +56,15 @@
 
 {#if pageSize !== rows.length}
   <div class="paginator">
-    <button on:click={() => (page = page > 1 ? page - 1 : page)}>&larr;</button>
+    <button on:click={() => (page = page > 1 ? page - 1 : page)}>
+      &larr;
+    </button>
     <div>
       Page <input type="number" bind:value={page} min="1" max={pageMax} />
       of&nbsp;{pageMax}
     </div>
-    <button on:click={() => (page = page < pageMax ? page + 1 : page)}
-      >&rarr;
+    <button on:click={() => (page = page < pageMax ? page + 1 : page)}>
+      &rarr;
     </button>
   </div>
 {/if}
@@ -81,11 +86,13 @@
   <tbody>
     {#each sortedRowSlice as row}
       <tr>
-        {#each columns as { rowScope, accessor, formatter, colspan }}
-          {#if rowScope}
-            <th scope="row" colspan={colspan ?? 1}>
-              {formatter ? formatter(row[accessor]) : row[accessor]}
-            </th>
+        {#each columns as { accessor, formatter, colspan, input }}
+          {#if input}
+            <input
+              type={row[accessor].type}
+              value={row[accessor].value}
+              on:change={row[accessor].onChange}
+            />
           {:else}
             <td colspan={colspan ?? 1}>
               {formatter ? formatter(row[accessor]) : row[accessor]}
@@ -121,6 +128,11 @@
     background-color: hsl(300, 100%, 25%);
     color: white;
     padding: 0;
+  }
+  input {
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    margin: 0;
   }
 
   .paginator {
