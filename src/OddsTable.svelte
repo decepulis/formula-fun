@@ -31,6 +31,7 @@
       label: "Cost",
       accessor: "cost",
       formatter: (value: number) => `€${value}`,
+      defaultSort: true,
     },
     {
       label: "Bonus",
@@ -46,7 +47,6 @@
       label: "Cost Strat",
       accessor: "costPoints",
       formatter: (value: number) => value.toFixed(2),
-      defaultSort: true,
     },
     {
       label: "Odds Strat",
