@@ -130,6 +130,7 @@
     padding: 0;
   }
   input {
+    max-width: 100%;
     padding-top: 0.2rem;
     padding-bottom: 0.2rem;
     margin: 0;

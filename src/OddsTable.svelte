@@ -1,7 +1,7 @@
 <script lang="ts">
   import { costTable, pointsTable, oddsTable, predictionTable } from "./stores";
   import Table from "./Table.svelte";
-  import type { CostRow, ExpectedPoints, InputProps, PointsRow } from "./types";
+  import type { CostRow, InputProps, PointsRow } from "./types";
 
   interface TableRow {
     driver: string;
