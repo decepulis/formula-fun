@@ -12,6 +12,7 @@ import type {
   PointsTable,
   PointsRow,
   PredictionTable,
+  EnabledTable,
 } from "./types";
 
 const initialOddsTable: OddsTable = {
@@ -298,6 +299,12 @@ export const pointsTable = derived(
   updatePointsTable
 );
 
+const initialDriverEnabledTable = Object.fromEntries(
+  Object.entries(initialOddsTable).map(([driver]) => [driver, true])
+) as EnabledTable;
+
+export const enabledTable = writable(initialDriverEnabledTable);
+
 // Finally, let's see what we can come up with for $100...
 const budget = 100;
 
@@ -342,9 +349,10 @@ function calculatePlay(
   return undefined;
 }
 
-function updatePlaysTable([$costTable, $pointsTable]: [
+function updatePlaysTable([$costTable, $pointsTable, $enabledTable]: [
   CostTable,
-  PointsTable
+  PointsTable,
+  EnabledTable
 ]): PlaysTable {
   // This is a basic knapsack problem, says the internet.
   // When I get around to optimizing, I'll have to look at that.
@@ -358,6 +366,7 @@ function updatePlaysTable([$costTable, $pointsTable]: [
     $costTable
   )) {
     // pick 1
+    if (!$enabledTable[driverA]) continue;
     const {
       predictionPoints: predictionPointsA,
       costPoints: costPointsA,
@@ -379,6 +388,7 @@ function updatePlaysTable([$costTable, $pointsTable]: [
       $costTable
     )) {
       // pick 2
+      if (!$enabledTable[driverB]) continue;
       if (driverA === driverB) continue;
 
       const {
@@ -404,6 +414,7 @@ function updatePlaysTable([$costTable, $pointsTable]: [
         $costTable
       )) {
         // pick 3
+        if (!$enabledTable[driverC]) continue;
         if (driverA === driverC || driverB === driverC) continue;
 
         const {
@@ -429,6 +440,7 @@ function updatePlaysTable([$costTable, $pointsTable]: [
           $costTable
         )) {
           // pick 4
+          if (!$enabledTable[driverD]) continue;
           if (driverA === driverD || driverB === driverD || driverC === driverD)
             continue;
 
@@ -469,4 +481,7 @@ function updatePlaysTable([$costTable, $pointsTable]: [
   return playsTable;
 }
 
-export const playsTable = derived([costTable, pointsTable], updatePlaysTable);
+export const playsTable = derived(
+  [costTable, pointsTable, enabledTable],
+  updatePlaysTable
+);

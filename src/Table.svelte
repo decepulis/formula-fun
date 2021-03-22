@@ -1,7 +1,4 @@
 <script lang="ts">
-  import App from "./App.svelte";
-  import { predictionTable } from "./stores";
-
   import type { Row, Column } from "./types";
 
   export let rows: Array<Row>;
@@ -56,14 +53,20 @@
 
 {#if pageSize !== rows.length}
   <div class="paginator">
-    <button on:click={() => (page = page > 1 ? page - 1 : page)}>
+    <button
+      on:click={() => (page = page > 1 ? page - 1 : page)}
+      disabled={page <= 1}
+    >
       &larr;
     </button>
     <div>
       Page <input type="number" bind:value={page} min="1" max={pageMax} />
       of&nbsp;{pageMax}
     </div>
-    <button on:click={() => (page = page < pageMax ? page + 1 : page)}>
+    <button
+      on:click={() => (page = page < pageMax ? page + 1 : page)}
+      disabled={page >= pageMax}
+    >
       &rarr;
     </button>
   </div>
@@ -87,17 +90,18 @@
     {#each sortedRowSlice as row}
       <tr>
         {#each columns as { accessor, formatter, colspan, input }}
-          {#if input}
-            <input
-              type={row[accessor].type}
-              value={row[accessor].value}
-              on:change={row[accessor].onChange}
-            />
-          {:else}
-            <td colspan={colspan ?? 1}>
+          <td colspan={colspan ?? 1}>
+            {#if input}
+              <input
+                type={row[accessor].type}
+                value={row[accessor].value}
+                checked={row[accessor].checked}
+                on:change={row[accessor].onChange}
+              />
+            {:else}
               {formatter ? formatter(row[accessor]) : row[accessor]}
-            </td>
-          {/if}
+            {/if}
+          </td>
         {/each}
       </tr>
     {/each}

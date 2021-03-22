@@ -57,6 +57,8 @@ export type CostTable = Record<Driver, CostRow>;
 
 export type PredictionTable = Record<Driver, ExpectedPoints>;
 
+export type EnabledTable = Record<Driver, boolean>;
+
 export interface PointsRow {
   predictionPoints: number;
   costPoints: number;
