@@ -46,9 +46,44 @@
     },
   ];
 
-  $: rowFilter = (row: PlaysRow) =>
-    row.drivers.every((driver) => $enabledTable[driver]);
+  let searchString = "";
+  $: searchArray =
+    searchString !== ""
+      ? searchString
+          .toLowerCase()
+          // all non-chars to spaces
+          .replace(/\W/g, " ")
+          // all chains of spaces to one space
+          .replace(/ +/g, " ")
+          .trim()
+          // to array
+          .split(" ")
+          // sort alphabetically
+          .sort()
+      : [];
+
+  $: rowFilter = (row: PlaysRow) => {
+    const driversAreEnabled = row.drivers.every(
+      (driver) => $enabledTable[driver]
+    );
+    const driversAreInSearchString =
+      searchArray.length > 0
+        ? searchArray.every((searchDriver) =>
+            row.drivers.some((driver) =>
+              driver.toLowerCase().startsWith(searchDriver)
+            )
+          )
+        : true;
+    return driversAreEnabled && driversAreInSearchString;
+  };
 </script>
 
 <h2>Plays</h2>
+<input
+  type="text"
+  bind:value={searchString}
+  placeholder="search"
+  aria-label="search"
+  style="width:100%"
+/>
 <Table {columns} rows={$playsTable} pageSize={50} {rowFilter} />
