@@ -1,4 +1,5 @@
 import { writable, derived } from "svelte/store";
+import { season } from "./season";
 
 import type {
   Driver,
@@ -15,28 +16,7 @@ import type {
   EnabledTable,
 } from "./types";
 
-const initialOddsTable: OddsTable = {
-  Hamilton: { o1: 165, o3: -500, o6: -700, o10: -1000 },
-  Verstappen: { o1: 165, o3: -300, o6: -500, o10: -600 },
-  Bottas: { o1: 450, o3: -400, o6: -625, o10: -800 },
-  Perez: { o1: 700, o3: 300, o6: -250, o10: -400 },
-  Alonso: { o1: 10000, o3: 300, o6: -175, o10: -400 },
-  Vettel: { o1: 5000, o3: 800, o6: -140, o10: -300 },
-  Ocon: { o1: 10000, o3: 700, o6: 160, o10: -280 },
-  Ricciardo: { o1: 2500, o3: 800, o6: 175, o10: -200 },
-  Norris: { o1: 3300, o3: 1600, o6: 175, o10: -250 },
-  Stroll: { o1: 6600, o3: 1600, o6: 175, o10: -250 },
-  Gasly: { o1: 5000, o3: 2500, o6: 200, o10: -200 },
-  Tsunoda: { o1: 6600, o3: 2500, o6: 275, o10: -150 },
-  Leclerc: { o1: 6600, o3: 2800, o6: 300, o10: -150 },
-  Sainz: { o1: 10000, o3: 4000, o6: 800, o10: 120 },
-  Russell: { o1: 50000, o3: 3300, o6: 5000, o10: 250 },
-  Raikkonnen: { o1: 25000, o3: 100000, o6: 10000, o10: 400 },
-  Giovinazzi: { o1: 25000, o3: 25000, o6: 10000, o10: 400 },
-  Mazepin: { o1: 300000, o3: 150000, o6: 10000, o10: 900 },
-  Schumacher: { o1: 300000, o3: 200000, o6: 10000, o10: 2000 },
-  Latifi: { o1: 200000, o3: 200000, o6: 10000, o10: 2000 },
-};
+const initialOddsTable = Object.values(season)[0];
 
 export const oddsTable = writable(initialOddsTable);
 
@@ -195,26 +175,26 @@ function updateCostTable([$percentTable, { adjAvg }]: [
 export const costTable = derived([percentTable, adjustment], updateCostTable);
 
 const initialPredictionTable = {
-  Hamilton: 20,
-  Verstappen: 18,
+  Verstappen: 20,
+  Hamilton: 18,
   Bottas: 16,
   Perez: 14,
-  Alonso: 12,
-  Vettel: 10,
-  Ocon: 8,
-  Ricciardo: 6,
-  Norris: 4,
-  Stroll: 3,
-  Gasly: 2,
-  Tsunoda: 1,
-  Leclerc: 0,
+  Ricciardo: 12,
+  Norris: 10,
+  Gasly: 8,
+  Leclerc: 6,
+  Stroll: 4,
+  Vettel: 3,
+  Tsunoda: 2,
+  Alonso: 1,
   Sainz: 0,
-  Russell: 0,
+  Ocon: 0,
   Raikkonnen: 0,
   Giovinazzi: 0,
-  Mazepin: 0,
-  Schumacher: 0,
+  Russell: 0,
   Latifi: 0,
+  Schumacher: 0,
+  Mazepin: 0,
 };
 
 export const predictionTable = writable(initialPredictionTable);
