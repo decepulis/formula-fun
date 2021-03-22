@@ -3,12 +3,7 @@
 
   export let rows: Array<Row>;
   export let columns: Array<Column>;
-
-  export let pageSize = rows.length;
-  let page = 1;
-  $: pageStart = pageSize * (page - 1);
-  $: pageEnd = pageStart + pageSize;
-  $: pageMax = Math.ceil(rows.length / pageSize);
+  export let rowFilter = (row: Row) => true;
 
   let sortColumn = columns.find((column) => column.defaultSort);
   let sortOrderDescending = true;
@@ -25,14 +20,14 @@
     }
   };
 
-  let sortedRowSlice: Array<Row> = [...rows];
+  let sortedFilteredRows: Array<Row> = [...rows];
   $: {
     // duplicate
-    sortedRowSlice = [...rows];
+    sortedFilteredRows = [...rows];
     // sort
     if (typeof sortColumn !== "undefined") {
       const { accessor } = sortColumn;
-      sortedRowSlice.sort((rowA, rowB) => {
+      sortedFilteredRows.sort((rowA, rowB) => {
         const valueA = rowA[accessor].value ?? rowA[accessor];
         const valueB = rowB[accessor].value ?? rowB[accessor];
         return valueA < valueB
@@ -46,9 +41,22 @@
           : 0;
       });
     }
-    // slice
-    sortedRowSlice = sortedRowSlice.slice(pageStart, pageEnd);
+    sortedFilteredRows = sortedFilteredRows
+      // secret index key
+      .map((entry, index) => ({
+        ...entry,
+        index,
+      }))
+      // rowFilter
+      .filter(rowFilter);
   }
+
+  export let pageSize = rows.length;
+  let page = 1;
+  $: pageStart = pageSize * (page - 1);
+  $: pageEnd = pageStart + pageSize;
+  $: pageMax = Math.ceil(sortedFilteredRows.length / pageSize);
+  $: slicedRows = sortedFilteredRows.slice(pageStart, pageEnd);
 </script>
 
 {#if pageSize !== rows.length}
@@ -75,19 +83,23 @@
   <thead>
     {#each columns as column}
       <th class="sort-header" scope="col" colspan={column.colspan ?? 1}>
-        <button
-          class="sort-button"
-          class:descending={sortOrderDescending}
-          class:active={sortColumn === column}
-          on:click={() => toggleSort(column)}
-        >
+        {#if column.sortDisabled}
           {column.label}
-        </button>
+        {:else}
+          <button
+            class="sort-button"
+            class:descending={sortOrderDescending}
+            class:active={sortColumn === column}
+            on:click={() => toggleSort(column)}
+          >
+            {column.label}
+          </button>
+        {/if}
       </th>
     {/each}
   </thead>
   <tbody>
-    {#each sortedRowSlice as row}
+    {#each slicedRows as row}
       <tr>
         {#each columns as { accessor, formatter, colspan, input }}
           <td colspan={colspan ?? 1}>

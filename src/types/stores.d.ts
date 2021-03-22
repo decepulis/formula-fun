@@ -74,7 +74,7 @@ export interface Play {
 }
 
 export interface PlaysRow extends Play {
-  drivers: string;
+  drivers: Driver[];
 }
 
 export type PlaysTable = PlaysRow[];

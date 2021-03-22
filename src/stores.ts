@@ -349,10 +349,9 @@ function calculatePlay(
   return undefined;
 }
 
-function updatePlaysTable([$costTable, $pointsTable, $enabledTable]: [
+function updatePlaysTable([$costTable, $pointsTable]: [
   CostTable,
-  PointsTable,
-  EnabledTable
+  PointsTable
 ]): PlaysTable {
   // This is a basic knapsack problem, says the internet.
   // When I get around to optimizing, I'll have to look at that.
@@ -366,14 +365,13 @@ function updatePlaysTable([$costTable, $pointsTable, $enabledTable]: [
     $costTable
   )) {
     // pick 1
-    if (!$enabledTable[driverA]) continue;
     const {
       predictionPoints: predictionPointsA,
       costPoints: costPointsA,
       oddsPoints: oddsPointsA,
     } = $pointsTable[driverA];
 
-    const aKey = [driverA].sort().join(", ");
+    const aKey = [driverA].sort().join(",");
     const aPlay = calculatePlay(
       [costA],
       [bonusA],
@@ -388,7 +386,6 @@ function updatePlaysTable([$costTable, $pointsTable, $enabledTable]: [
       $costTable
     )) {
       // pick 2
-      if (!$enabledTable[driverB]) continue;
       if (driverA === driverB) continue;
 
       const {
@@ -397,7 +394,7 @@ function updatePlaysTable([$costTable, $pointsTable, $enabledTable]: [
         oddsPoints: oddsPointsB,
       } = $pointsTable[driverB];
 
-      const abKey = [driverA, driverB].sort().join(", ");
+      const abKey = [driverA, driverB].sort().join(",");
       if (!playsByKey.hasOwnProperty(abKey)) {
         const abPlay = calculatePlay(
           [costA, costB],
@@ -414,7 +411,6 @@ function updatePlaysTable([$costTable, $pointsTable, $enabledTable]: [
         $costTable
       )) {
         // pick 3
-        if (!$enabledTable[driverC]) continue;
         if (driverA === driverC || driverB === driverC) continue;
 
         const {
@@ -423,7 +419,7 @@ function updatePlaysTable([$costTable, $pointsTable, $enabledTable]: [
           oddsPoints: oddsPointsC,
         } = $pointsTable[driverC];
 
-        const abcKey = [driverA, driverB, driverC].sort().join(", ");
+        const abcKey = [driverA, driverB, driverC].sort().join(",");
         if (!playsByKey.hasOwnProperty(abcKey)) {
           const abcPlay = calculatePlay(
             [costA, costB, costC],
@@ -440,7 +436,6 @@ function updatePlaysTable([$costTable, $pointsTable, $enabledTable]: [
           $costTable
         )) {
           // pick 4
-          if (!$enabledTable[driverD]) continue;
           if (driverA === driverD || driverB === driverD || driverC === driverD)
             continue;
 
@@ -450,9 +445,7 @@ function updatePlaysTable([$costTable, $pointsTable, $enabledTable]: [
             oddsPoints: oddsPointsD,
           } = $pointsTable[driverD];
 
-          const abcdKey = [driverA, driverB, driverC, driverD]
-            .sort()
-            .join(", ");
+          const abcdKey = [driverA, driverB, driverC, driverD].sort().join(",");
           if (!playsByKey.hasOwnProperty(abcdKey)) {
             const abcdPlay = calculatePlay(
               [costA, costB, costC, costD],
@@ -475,13 +468,13 @@ function updatePlaysTable([$costTable, $pointsTable, $enabledTable]: [
   }
 
   const playsTable = Object.entries(playsByKey)
-    .filter(([drivers, play]) => typeof play !== "undefined")
-    .map(([drivers, play]) => ({ drivers, ...play }));
+    .filter(([, play]) => typeof play !== "undefined")
+    .map(([drivers, play]) => ({
+      drivers: drivers.split(",") as Driver[],
+      ...play,
+    }));
 
   return playsTable;
 }
 
-export const playsTable = derived(
-  [costTable, pointsTable, enabledTable],
-  updatePlaysTable
-);
+export const playsTable = derived([costTable, pointsTable], updatePlaysTable);

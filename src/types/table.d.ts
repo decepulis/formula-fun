@@ -12,6 +12,7 @@ export interface Column {
   accessor: string;
   colspan?: number;
   defaultSort?: boolean;
+  sortDisabled?: boolean;
 
   input?: boolean;
   formatter?: (any) => any;

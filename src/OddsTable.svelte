@@ -38,7 +38,7 @@
     oddsPoints: $pointsTable[driver].oddsPoints,
   }));
   const columns = [
-    { label: "", accessor: "isDriverEnabled", input: true },
+    { label: "", accessor: "isDriverEnabled", input: true, sortDisabled: true },
     { label: "Driver", accessor: "driver", colspan: 3 },
     {
       label: "Cost",
