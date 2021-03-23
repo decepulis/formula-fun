@@ -5,7 +5,11 @@
   export let toFixed = 2;
 
   $: percentile =
-    index === 0 ? "100" : (100 - (100 * index) / length).toFixed(2);
+    index === 0
+      ? "100"
+      : index + 1 === length
+      ? "0"
+      : (100 - (100 * (index + 1)) / length).toFixed(2);
 </script>
 
 <div>
