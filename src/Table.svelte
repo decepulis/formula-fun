@@ -19,17 +19,21 @@
   export let rowFilter = (row: Row) => true;
 
   let sortColumn = columns.find((column) => column.defaultSort);
-  let sortOrderDescending = true;
+  let sortOrder: "ascending" | "descending" =
+    sortColumn?.sortFirst ?? "descending";
   let toggleSort = (column: Column) => {
+    const firstSortOrder = column.sortFirst ?? "descending";
+    const secondSortOrder =
+      firstSortOrder === "ascending" ? "descending" : "ascending";
     if (sortColumn === column) {
-      if (sortOrderDescending) {
-        sortOrderDescending = false;
+      if (sortOrder === firstSortOrder) {
+        sortOrder = secondSortOrder;
       } else {
         sortColumn = undefined;
       }
     } else {
       sortColumn = column;
-      sortOrderDescending = true;
+      sortOrder = firstSortOrder;
     }
   };
 
@@ -47,11 +51,11 @@
         const valueA = sortValue(rowA[accessor]);
         const valueB = sortValue(rowB[accessor]);
         return valueA < valueB
-          ? sortOrderDescending
+          ? sortOrder === "descending"
             ? 1
             : -1
           : valueA > valueB
-          ? sortOrderDescending
+          ? sortOrder === "descending"
             ? -1
             : 1
           : 0;
@@ -104,7 +108,7 @@
         {:else}
           <button
             class="sort-button"
-            class:descending={sortOrderDescending}
+            class:descending={sortOrder === "descending"}
             class:active={sortColumn === column}
             on:click={() => toggleSort(column)}
           >
@@ -121,8 +125,8 @@
           <td colspan={column.colspan ?? 1}>
             {#if isComponentColumn(column)}
               <svelte:component
-                this={column.componentFn(row[column.accessor]).this}
-                {...column.componentFn(row[column.accessor]).props}
+                this={column.componentFn(row, row[column.accessor]).this}
+                {...column.componentFn(row, row[column.accessor]).props}
               />
             {:else}
               {column.formatter

@@ -15,6 +15,9 @@ import type {
   PredictionTable,
   EnabledTable,
   Team,
+  PlaysRow,
+  PointsKey,
+  IndexKey,
 } from "./types";
 
 export const driverTeam: Record<Driver, Team> = {
@@ -353,6 +356,39 @@ function calculatePlay(
   return undefined;
 }
 
+const indexKeys: Record<PointsKey, IndexKey> = {
+  predictionPoints: "predictionIndex",
+  costPoints: "costIndex",
+  oddsPoints: "oddsIndex",
+};
+function indexPlaysForKey(plays: PlaysRow[], key: PointsKey): PlaysRow[] {
+  // This is bad typescript, isn't it?
+  plays.sort((playA, playB) => playB[key] - playA[key]);
+
+  const indexedPlays: PlaysRow[] = [...plays];
+  const indexKey = indexKeys[key];
+  for (const [thisIndex, thisPlay] of indexedPlays.entries()) {
+    const prevPlay = indexedPlays[thisIndex - 1];
+    if (typeof prevPlay === "undefined") {
+      continue;
+    }
+
+    indexedPlays[thisIndex] = {
+      ...thisPlay,
+      [indexKey]:
+        prevPlay[key] === thisPlay[key] ? prevPlay[indexKey] : thisIndex,
+    };
+  }
+  return indexedPlays;
+}
+function indexPlays(plays: PlaysRow[]): PlaysRow[] {
+  const oneIndex = indexPlaysForKey(plays, "predictionPoints");
+  const twoIndices = indexPlaysForKey(oneIndex, "costPoints");
+  const allIndices = indexPlaysForKey(twoIndices, "oddsPoints");
+
+  return allIndices;
+}
+
 function updatePlaysTable([$costTable, $pointsTable]: [
   CostTable,
   PointsTable
@@ -471,12 +507,22 @@ function updatePlaysTable([$costTable, $pointsTable]: [
     }
   }
 
-  const playsTable = Object.entries(playsByKey)
+  // And now we translate the object up above to something more tabular...
+  // and take note of where each strategy ranks
+  const unindexedPlaysTable = Object.entries(playsByKey)
     .filter(([, play]) => typeof play !== "undefined")
     .map(([drivers, play]) => ({
       drivers: drivers.split(",") as Driver[],
+      predictionIndex: 0, // we'll write these indices momentarily
+      costIndex: 0,
+      oddsIndex: 0,
       ...play,
     }));
+
+  // Finally, we take note of each play's ranking
+  // in each strategy using the <play>Index key,
+  // repeating indices in the case of a tie
+  const playsTable = indexPlays(unindexedPlaysTable);
 
   return playsTable;
 }

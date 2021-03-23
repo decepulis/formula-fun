@@ -78,15 +78,19 @@ export interface PointsRow {
 }
 export type PointsTable = Record<Driver, PointsRow>;
 
+export type PointsKey = "predictionPoints" | "costPoints" | "oddsPoints";
+export type IndexKey = "predictionIndex" | "costIndex" | "oddsIndex";
 export interface Play {
   cost: number;
   predictionPoints: number;
   costPoints: number;
   oddsPoints: number;
 }
-
 export interface PlaysRow extends Play {
   drivers: Driver[];
+  predictionIndex: number;
+  costIndex: number;
+  oddsIndex: number;
 }
 
 export type PlaysTable = PlaysRow[];

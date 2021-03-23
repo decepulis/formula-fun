@@ -9,13 +9,16 @@ interface BaseColumn {
   colspan?: number;
   sortDisabled?: boolean;
   defaultSort?: boolean;
-  accessor: string; // keyof R
+  sortFirst?: "ascending" | "descending";
+  accessor?: string; // keyof R
 }
 export interface FormatColumn extends BaseColumn {
+  accessor: string;
   formatter?: (accessedValue: any) => any;
 }
 interface BaseComponentColumn extends BaseColumn {
   componentFn: (
+    row: Row,
     accessedValue: any
   ) => {
     this: typeof SvelteComponent;
@@ -25,6 +28,7 @@ interface BaseComponentColumn extends BaseColumn {
 
 interface SortableComponentColumn extends BaseComponentColumn {
   sortDisabled: false;
+  accessor: string;
   sortValue: (accessedValue: any) => any;
 }
 interface UnsortableComponentColumn extends BaseComponentColumn {

@@ -35,7 +35,7 @@
       accessor: "driver",
       sortDisabled: false,
       sortValue: (accessedValue: Driver) => $enabledTable[accessedValue],
-      componentFn: (accessedValue: Driver) => ({
+      componentFn: (row, accessedValue: Driver) => ({
         this: EnabledDriverCheckbox,
         props: { driver: accessedValue },
       }),
@@ -44,9 +44,10 @@
       label: "Driver",
       accessor: "driver",
       colspan: 3,
+      sortFirst: "ascending",
       sortDisabled: false,
       sortValue: (accessedValue: Driver) => accessedValue,
-      componentFn: (accessedValue: Driver) => ({
+      componentFn: (row, accessedValue: Driver) => ({
         this: DriverCell,
         props: { driver: accessedValue },
       }),
@@ -70,7 +71,7 @@
       colspan: 3,
       sortDisabled: false,
       sortValue: (accessedValue: Driver) => $predictionTable[accessedValue],
-      componentFn: (accessedValue: Driver) => ({
+      componentFn: (row, accessedValue: Driver) => ({
         this: PredictionInput,
         props: { driver: accessedValue },
       }),

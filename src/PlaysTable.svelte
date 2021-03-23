@@ -1,4 +1,6 @@
 <script lang="ts">
+  import PointsIndexCell from "./components/PointsIndexCell.svelte";
+
   import { enabledTable, playsTable } from "./stores";
 
   import Table from "./Table.svelte";
@@ -6,43 +8,53 @@
 
   const columns = [
     {
-      label: "",
-      accessor: "index",
-      colScope: true,
-      sortDisabled: true,
-      formatter: (value: number) => value + 1,
-    },
-    {
       label: "Drivers",
       accessor: "drivers",
-      formatter: (drivers: Driver[]) => drivers.join(", "),
+      formatter: (accessedValue: Driver[]) => accessedValue.join(", "),
       colScope: true,
-      colspan: 6,
+      sortFirst: "ascending",
+      colspan: 2,
     },
     {
       label: "Cost",
       accessor: "cost",
-      formatter: (value: number) => `€${value}`,
-      colspan: 3,
+      formatter: (accessedValue: number) => `€${accessedValue}`,
     },
     {
       label: "Prediction Strat",
-      accessor: "predictionPoints",
-      formatter: (value: number) => value.toFixed(2),
-      colspan: 3,
+      accessor: "predictionIndex",
+      sortFirst: "ascending",
+      componentFn: ({ predictionPoints, predictionIndex }: PlaysRow) => ({
+        this: PointsIndexCell,
+        props: {
+          index: predictionIndex,
+          points: predictionPoints,
+        },
+      }),
     },
     {
       label: "Cost Strat",
-      accessor: "costPoints",
-      formatter: (value: number) => value.toFixed(2),
-      defaultSort: true,
-      colspan: 3,
+      accessor: "costIndex",
+      sortFirst: "ascending",
+      componentFn: ({ costPoints, costIndex }: PlaysRow) => ({
+        this: PointsIndexCell,
+        props: {
+          index: costIndex,
+          points: costPoints,
+        },
+      }),
     },
     {
       label: "Odds Strat",
-      accessor: "oddsPoints",
-      formatter: (value: number) => value.toFixed(2),
-      colspan: 3,
+      accessor: "oddsIndex",
+      sortFirst: "ascending",
+      componentFn: ({ oddsPoints, oddsIndex }: PlaysRow) => ({
+        this: PointsIndexCell,
+        props: {
+          index: oddsIndex,
+          points: oddsPoints,
+        },
+      }),
     },
   ];
 
@@ -78,11 +90,11 @@
   };
 </script>
 
-<h2>Plays</h2>
+<h2>Plays ({$playsTable.length})</h2>
 <input
   type="text"
   bind:value={searchString}
-  placeholder="search"
+  placeholder="Search Drivers"
   aria-label="search"
   style="width:100%"
 />
