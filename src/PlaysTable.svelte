@@ -13,12 +13,13 @@
       formatter: (accessedValue: Driver[]) => accessedValue.join(", "),
       colScope: true,
       sortFirst: "ascending",
-      colspan: 2,
+      colspan: 3,
     },
     {
       label: "Cost",
       accessor: "cost",
       formatter: (accessedValue: number) => `€${accessedValue}`,
+      colspan: 2,
     },
     {
       label: "Prediction Strat",
@@ -31,6 +32,7 @@
           points: predictionPoints,
         },
       }),
+      colspan: 2,
     },
     {
       label: "Cost Strat",
@@ -43,6 +45,7 @@
           points: costPoints,
         },
       }),
+      colspan: 2,
     },
     {
       label: "Odds Strat",
@@ -55,6 +58,7 @@
           points: oddsPoints,
         },
       }),
+      colspan: 2,
     },
   ];
 

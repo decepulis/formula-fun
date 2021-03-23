@@ -6,11 +6,14 @@
   export let toFixed = 2;
 </script>
 
-<div><span>{index + 1}&nbsp;</span> <span>{points.toFixed(toFixed)}</span></div>
+<div>
+  <span class="index">{index + 1}</span>
+  <span class="points">({points.toFixed(toFixed)})</span>
+</div>
 
 <style>
-  div {
-    display: grid;
-    grid-template-columns: 1fr 4fr;
+  .index {
+    display: inline-block;
+    width: 4ch;
   }
 </style>

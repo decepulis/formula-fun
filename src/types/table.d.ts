@@ -29,7 +29,7 @@ interface BaseComponentColumn extends BaseColumn {
 interface SortableComponentColumn extends BaseComponentColumn {
   sortDisabled: false;
   accessor: string;
-  sortValue: (accessedValue: any) => any;
+  sortValue?: (accessedValue: any) => any;
 }
 interface UnsortableComponentColumn extends BaseComponentColumn {
   sortDisabled: true;
