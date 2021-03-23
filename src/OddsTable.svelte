@@ -57,13 +57,13 @@
       accessor: "cost",
       formatter: (accessedValue: number) => `€${accessedValue}`,
       defaultSort: true,
-      colspan: 3,
+      colspan: 2,
     },
     {
       label: "Bonus",
       accessor: "bonus",
       formatter: (accessedValue: number) => `x${accessedValue}`,
-      colspan: 3,
+      colspan: 2,
     },
     {
       label: "Prediction Strat",
