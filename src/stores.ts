@@ -14,7 +14,31 @@ import type {
   PointsRow,
   PredictionTable,
   EnabledTable,
+  Team,
 } from "./types";
+
+export const driverTeam: Record<Driver, Team> = {
+  Hamilton: "Mercedes",
+  Bottas: "Mercedes",
+  Ocon: "Alpine",
+  Alonso: "Alpine",
+  Schumacher: "Haas",
+  Mazepin: "Haas",
+  Norris: "McLaren",
+  Ricciardo: "McLaren",
+  Raikkonnen: "Alfa Romeo",
+  Giovinazzi: "Alfa Romeo",
+  Verstappen: "Red Bull",
+  Perez: "Red Bull",
+  Stroll: "Aston Martin",
+  Vettel: "Aston Martin",
+  Leclerc: "Ferrari",
+  Sainz: "Ferrari",
+  Gasly: "AlphaTauri",
+  Tsunoda: "AlphaTauri",
+  Russell: "Williams",
+  Latifi: "Williams",
+};
 
 const initialOddsTable = Object.values(season)[0];
 

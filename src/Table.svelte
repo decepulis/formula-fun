@@ -1,5 +1,18 @@
 <script lang="ts">
-  import type { Row, Column } from "./types";
+  import type {
+    Row,
+    Column,
+    FormatColumn,
+    ComponentColumn,
+    SortableComponentColumn,
+  } from "./types";
+
+  const isComponentColumn = (column: Column): column is ComponentColumn =>
+    column.hasOwnProperty("componentFn");
+  const isSortableComponentColumn = (
+    column: Column
+  ): column is SortableComponentColumn =>
+    isComponentColumn(column) && column.hasOwnProperty("sortValue");
 
   export let rows: Array<Row>;
   export let columns: Array<Column>;
@@ -27,9 +40,12 @@
     // sort
     if (typeof sortColumn !== "undefined") {
       const { accessor } = sortColumn;
+      const sortValue = isSortableComponentColumn(sortColumn)
+        ? sortColumn.sortValue
+        : (value) => value;
       sortedFilteredRows.sort((rowA, rowB) => {
-        const valueA = rowA[accessor].value ?? rowA[accessor];
-        const valueB = rowB[accessor].value ?? rowB[accessor];
+        const valueA = sortValue(rowA[accessor]);
+        const valueB = sortValue(rowB[accessor]);
         return valueA < valueB
           ? sortOrderDescending
             ? 1
@@ -101,17 +117,17 @@
   <tbody>
     {#each slicedRows as row}
       <tr>
-        {#each columns as { accessor, formatter, colspan, input }}
-          <td colspan={colspan ?? 1}>
-            {#if input}
-              <input
-                type={row[accessor].type}
-                value={row[accessor].value}
-                checked={row[accessor].checked}
-                on:change={row[accessor].onChange}
+        {#each columns as column}
+          <td colspan={column.colspan ?? 1}>
+            {#if isComponentColumn(column)}
+              <svelte:component
+                this={column.componentFn(row[column.accessor]).this}
+                {...column.componentFn(row[column.accessor]).props}
               />
             {:else}
-              {formatter ? formatter(row[accessor]) : row[accessor]}
+              {column.formatter
+                ? column.formatter(row[column.accessor])
+                : row[column.accessor]}
             {/if}
           </td>
         {/each}
@@ -139,17 +155,12 @@
   td {
     padding: 0.2rem;
     text-align: left;
+    font-weight: normal;
   }
   th[scope="col"] {
     background-color: hsl(300, 100%, 25%);
     color: white;
     padding: 0;
-  }
-  input {
-    max-width: 100%;
-    padding-top: 0.2rem;
-    padding-bottom: 0.2rem;
-    margin: 0;
   }
 
   .paginator {
@@ -170,6 +181,8 @@
     background: none;
     color: inherit;
     font-size: inherit;
+    font-style: inherit;
+    font-weight: inherit;
     cursor: pointer;
     appearance: none;
     -webkit-appearance: none;

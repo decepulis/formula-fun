@@ -1,3 +1,15 @@
+type Team =
+  | "Mercedes"
+  | "Alpine"
+  | "Haas"
+  | "McLaren"
+  | "Alfa Romeo"
+  | "Red Bull"
+  | "Aston Martin"
+  | "Ferrari"
+  | "AlphaTauri"
+  | "Williams";
+
 type Driver =
   | "Hamilton"
   | "Bottas"

@@ -1,74 +1,90 @@
 <script lang="ts">
+  import DriverCell from "./components/DriverCell.svelte";
+  import EnabledDriverCheckbox from "./components/EnabledDriverCheckbox.svelte";
+  import PredictionInput from "./components/PredictionInput.svelte";
+
   import {
     costTable,
     pointsTable,
     oddsTable,
-    predictionTable,
     enabledTable,
+    predictionTable,
   } from "./stores";
   import Table from "./Table.svelte";
-  import type { CostRow, InputProps, PointsRow } from "./types";
+  import type { Column, CostRow, Driver, PointsRow } from "./types";
 
+  $: drivers = Object.keys($oddsTable);
   interface TableRow {
-    isDriverEnabled: InputProps;
     driver: string;
     cost: CostRow["cost"];
     bonus: CostRow["bonus"];
-    predictionPoints: InputProps;
     costPoints: PointsRow["costPoints"];
     oddsPoints: PointsRow["oddsPoints"];
   }
-  $: drivers = Object.keys($oddsTable);
   let rows: TableRow[] = [];
   $: rows = drivers.map((driver) => ({
-    isDriverEnabled: {
-      type: "checkbox",
-      checked: $enabledTable[driver],
-      onChange: (e) => ($enabledTable[driver] = e.target.checked),
-    },
     driver,
     cost: $costTable[driver].cost,
     bonus: $costTable[driver].bonus,
-    predictionPoints: {
-      type: "number",
-      value: $predictionTable[driver],
-      onChange: (e) => ($predictionTable[driver] = parseInt(e.target.value)),
-    },
     costPoints: $pointsTable[driver].costPoints,
     oddsPoints: $pointsTable[driver].oddsPoints,
   }));
-  const columns = [
-    { label: "", accessor: "isDriverEnabled", input: true, sortDisabled: true },
-    { label: "Driver", accessor: "driver", colspan: 3 },
+  const columns: Column[] = [
+    {
+      label: "",
+      accessor: "driver",
+      sortDisabled: false,
+      sortValue: (accessedValue: Driver) => $enabledTable[accessedValue],
+      componentFn: (accessedValue: Driver) => ({
+        this: EnabledDriverCheckbox,
+        props: { driver: accessedValue },
+      }),
+    },
+    {
+      label: "Driver",
+      accessor: "driver",
+      colspan: 3,
+      sortDisabled: false,
+      sortValue: (accessedValue: Driver) => accessedValue,
+      componentFn: (accessedValue: Driver) => ({
+        this: DriverCell,
+        props: { driver: accessedValue },
+      }),
+    },
     {
       label: "Cost",
       accessor: "cost",
-      formatter: (value: number) => `€${value}`,
+      formatter: (accessedValue: number) => `€${accessedValue}`,
       defaultSort: true,
       colspan: 3,
     },
     {
       label: "Bonus",
       accessor: "bonus",
-      formatter: (value: number) => `x${value}`,
+      formatter: (accessedValue: number) => `x${accessedValue}`,
       colspan: 3,
     },
     {
       label: "Prediction Strat",
-      accessor: "predictionPoints",
-      input: true,
+      accessor: "driver",
       colspan: 3,
+      sortDisabled: false,
+      sortValue: (accessedValue: Driver) => $predictionTable[accessedValue],
+      componentFn: (accessedValue: Driver) => ({
+        this: PredictionInput,
+        props: { driver: accessedValue },
+      }),
     },
     {
       label: "Cost Strat",
       accessor: "costPoints",
-      formatter: (value: number) => value.toFixed(2),
+      formatter: (accessedValue: number) => accessedValue.toFixed(2),
       colspan: 3,
     },
     {
       label: "Odds Strat",
       accessor: "oddsPoints",
-      formatter: (value: number) => value.toFixed(2),
+      formatter: (accessedValue: number) => accessedValue.toFixed(2),
       colspan: 3,
     },
   ];
