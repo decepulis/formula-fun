@@ -500,7 +500,7 @@ function updatePlaysTable([$costTable, $pointsTable]: [
               [oddsPointsA, oddsPointsB, oddsPointsC, oddsPointsD]
             );
 
-            playsByKey[abcKey] = abcdPlay;
+            playsByKey[abcdKey] = abcdPlay;
           }
         }
       }
