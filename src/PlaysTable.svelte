@@ -22,39 +22,43 @@
       colspan: 3,
     },
     {
-      label: "Prediction Strat",
+      label: "Prediction Score",
       accessor: "predictionIndex",
       sortFirst: "ascending",
       componentFn: ({ predictionPoints, predictionIndex }: PlaysRow) => ({
         this: PointsIndexCell,
         props: {
           index: predictionIndex,
+          length: $playsTable.length,
           points: predictionPoints,
         },
       }),
       colspan: 4,
     },
     {
-      label: "Cost Strat",
+      label: "Cost Score",
       accessor: "costIndex",
       sortFirst: "ascending",
+      defaultSort: true,
       componentFn: ({ costPoints, costIndex }: PlaysRow) => ({
         this: PointsIndexCell,
         props: {
           index: costIndex,
+          length: $playsTable.length,
           points: costPoints,
         },
       }),
       colspan: 4,
     },
     {
-      label: "Odds Strat",
+      label: "Odds Score",
       accessor: "oddsIndex",
       sortFirst: "ascending",
       componentFn: ({ oddsPoints, oddsIndex }: PlaysRow) => ({
         this: PointsIndexCell,
         props: {
           index: oddsIndex,
+          length: $playsTable.length,
           points: oddsPoints,
         },
       }),
