@@ -17,7 +17,7 @@ import type {
   Team,
   PlaysRow,
   PointsKey,
-  IndexKey,
+  ScoreKey,
 } from "./types";
 
 export const driverTeam: Record<Driver, Team> = {
@@ -366,37 +366,40 @@ function calculatePlay(
   return undefined;
 }
 
-const indexKeys: Record<PointsKey, IndexKey> = {
-  predictionPoints: "predictionIndex",
-  costPoints: "costIndex",
-  oddsPoints: "oddsIndex",
+const scoreKeys: Record<PointsKey, ScoreKey> = {
+  predictionPoints: "predictionScore",
+  costPoints: "costScore",
+  oddsPoints: "oddsScore",
 };
-function indexPlaysForKey(plays: PlaysRow[], key: PointsKey): PlaysRow[] {
+function scorePlaysForKey(plays: PlaysRow[], key: PointsKey): PlaysRow[] {
   // This is bad typescript, isn't it?
   plays.sort((playA, playB) => playB[key] - playA[key]);
 
-  const indexedPlays: PlaysRow[] = [...plays];
-  const indexKey = indexKeys[key];
-  for (const [thisIndex, thisPlay] of indexedPlays.entries()) {
-    const prevPlay = indexedPlays[thisIndex - 1];
-    if (typeof prevPlay === "undefined") {
-      continue;
-    }
+  const scoredPlays: PlaysRow[] = [...plays];
+  const scoreKey = scoreKeys[key];
+  for (const [thisIndex, thisPlay] of scoredPlays.entries()) {
+    const prevPlay = scoredPlays[thisIndex - 1];
 
-    indexedPlays[thisIndex] = {
+    const thisScore = 100 - 100 * (thisIndex / scoredPlays.length);
+    scoredPlays[thisIndex] = {
       ...thisPlay,
-      [indexKey]:
-        prevPlay[key] === thisPlay[key] ? prevPlay[indexKey] : thisIndex,
+      [scoreKey]:
+        prevPlay?.[key] === thisPlay[key] ? prevPlay?.[scoreKey] : thisScore,
     };
   }
-  return indexedPlays;
+  return scoredPlays;
 }
-function indexPlays(plays: PlaysRow[]): PlaysRow[] {
-  const oneIndex = indexPlaysForKey(plays, "predictionPoints");
-  const twoIndices = indexPlaysForKey(oneIndex, "costPoints");
-  const allIndices = indexPlaysForKey(twoIndices, "oddsPoints");
+function scorePlays(plays: PlaysRow[]): PlaysRow[] {
+  const oneScore = scorePlaysForKey(plays, "predictionPoints");
+  const twoScores = scorePlaysForKey(oneScore, "costPoints");
+  const allScores = scorePlaysForKey(twoScores, "oddsPoints");
 
-  return allIndices;
+  const allScoresCombined = allScores.map((play) => ({
+    ...play,
+    combinedScore: (play.predictionScore + play.costScore + play.oddsScore) / 3,
+  }));
+
+  return allScoresCombined;
 }
 
 function updatePlaysTable([$costTable, $pointsTable]: [
@@ -519,20 +522,21 @@ function updatePlaysTable([$costTable, $pointsTable]: [
 
   // And now we translate the object up above to something more tabular...
   // and take note of where each strategy ranks
-  const unindexedPlaysTable = Object.entries(playsByKey)
+  const unscoredPlaysTable = Object.entries(playsByKey)
     .filter(([, play]) => typeof play !== "undefined")
     .map(([drivers, play]) => ({
       drivers: drivers.split(",") as Driver[],
-      predictionIndex: 0, // we'll write these indices momentarily
-      costIndex: 0,
-      oddsIndex: 0,
+      predictionScore: 0, // we'll write these indices momentarily
+      costScore: 0,
+      oddsScore: 0,
+      combinedScore: 0,
       ...play,
     }));
 
   // Finally, we take note of each play's ranking
-  // in each strategy using the <play>Index key,
+  // in each strategy using the <play>Score key,
   // repeating indices in the case of a tie
-  const playsTable = indexPlays(unindexedPlaysTable);
+  const playsTable = scorePlays(unscoredPlaysTable);
 
   return playsTable;
 }

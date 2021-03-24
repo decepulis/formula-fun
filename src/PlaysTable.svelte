@@ -1,5 +1,5 @@
 <script lang="ts">
-  import PointsIndexCell from "./components/PointsIndexCell.svelte";
+  import PointsScoreCell from "./components/PointsScoreCell.svelte";
 
   import { enabledTable, playsTable } from "./stores";
 
@@ -23,13 +23,11 @@
     },
     {
       label: "Prediction Score",
-      accessor: "predictionIndex",
-      sortFirst: "ascending",
-      componentFn: ({ predictionPoints, predictionIndex }: PlaysRow) => ({
-        this: PointsIndexCell,
+      accessor: "predictionScore",
+      componentFn: ({ predictionPoints, predictionScore }: PlaysRow) => ({
+        this: PointsScoreCell,
         props: {
-          index: predictionIndex,
-          length: $playsTable.length,
+          score: predictionScore,
           points: predictionPoints,
         },
       }),
@@ -37,14 +35,11 @@
     },
     {
       label: "Cost Score",
-      accessor: "costIndex",
-      sortFirst: "ascending",
-      defaultSort: true,
-      componentFn: ({ costPoints, costIndex }: PlaysRow) => ({
-        this: PointsIndexCell,
+      accessor: "costScore",
+      componentFn: ({ costPoints, costScore }: PlaysRow) => ({
+        this: PointsScoreCell,
         props: {
-          index: costIndex,
-          length: $playsTable.length,
+          score: costScore,
           points: costPoints,
         },
       }),
@@ -52,17 +47,22 @@
     },
     {
       label: "Odds Score",
-      accessor: "oddsIndex",
-      sortFirst: "ascending",
-      componentFn: ({ oddsPoints, oddsIndex }: PlaysRow) => ({
-        this: PointsIndexCell,
+      accessor: "oddsScore",
+      componentFn: ({ oddsPoints, oddsScore }: PlaysRow) => ({
+        this: PointsScoreCell,
         props: {
-          index: oddsIndex,
-          length: $playsTable.length,
+          score: oddsScore,
           points: oddsPoints,
         },
       }),
       colspan: 4,
+    },
+    {
+      label: "Combined Score",
+      accessor: "combinedScore",
+      defaultSort: true,
+      formatter: (accessedValue: number) => accessedValue.toFixed(2),
+      colspan: 3,
     },
   ];
 
