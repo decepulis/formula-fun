@@ -201,7 +201,7 @@ function updateCostTable([$percentTable, { adjAvg }]: [
 
 export const costTable = derived([percentTable, adjustment], updateCostTable);
 
-const initialPredictionTable = {
+const defaultPredictionTable: PredictionTable = {
   Verstappen: 20,
   Hamilton: 18,
   Bottas: 16,
@@ -224,7 +224,12 @@ const initialPredictionTable = {
   Mazepin: 0,
 };
 
+const initialPredictionTable =
+  JSON.parse(localStorage.getItem("predictionTable")) ?? defaultPredictionTable;
 export const predictionTable = writable(initialPredictionTable);
+predictionTable.subscribe((value) =>
+  localStorage.setItem("predictionTable", JSON.stringify(value))
+);
 
 // Now, let's figure out how much each player is worth using our three algorithms!
 function updatePointsTable([$predictionTable, $costTable, $percentTable]: [
@@ -306,11 +311,16 @@ export const pointsTable = derived(
   updatePointsTable
 );
 
-const initialDriverEnabledTable = Object.fromEntries(
+const defaultEnabledTable = Object.fromEntries(
   Object.entries(initialOddsTable).map(([driver]) => [driver, true])
 ) as EnabledTable;
+const initialEnabledTable =
+  JSON.parse(localStorage.getItem("enabledTable")) ?? defaultEnabledTable;
 
-export const enabledTable = writable(initialDriverEnabledTable);
+export const enabledTable = writable(initialEnabledTable);
+enabledTable.subscribe((value) =>
+  localStorage.setItem("enabledTable", JSON.stringify(value))
+);
 
 // Finally, let's see what we can come up with for $100...
 const budget = 100;
