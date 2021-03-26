@@ -402,6 +402,21 @@ function scorePlays(plays: PlaysRow[]): PlaysRow[] {
   return allScoresCombined;
 }
 
+function calculateKey(driverArr: string[], costArr: number[]) {
+  // zip drivers and cost together
+  const driversAndCost: [string, number][] = driverArr.map((driver, index) => [
+    driver,
+    costArr[index],
+  ]);
+  // sort by cost
+  driversAndCost.sort(([driverA, costA], [driverB, costB]) => {
+    const keyA = costA === costB ? driverA : costA;
+    const keyB = costA === costB ? driverB : costB;
+    return keyA < keyB ? 1 : keyA > keyB ? -1 : 0;
+  });
+  // isolate drivers
+  return driversAndCost.map(([driver]) => driver).join(",");
+}
 function updatePlaysTable([$costTable, $pointsTable]: [
   CostTable,
   PointsTable
@@ -424,7 +439,7 @@ function updatePlaysTable([$costTable, $pointsTable]: [
       oddsPoints: oddsPointsA,
     } = $pointsTable[driverA];
 
-    const aKey = [driverA].sort().join(",");
+    const aKey = calculateKey([driverA], [costA]);
     const aPlay = calculatePlay(
       [costA],
       [bonusA],
@@ -447,7 +462,7 @@ function updatePlaysTable([$costTable, $pointsTable]: [
         oddsPoints: oddsPointsB,
       } = $pointsTable[driverB];
 
-      const abKey = [driverA, driverB].sort().join(",");
+      const abKey = calculateKey([driverA, driverB], [costA, costB]);
       if (!playsByKey.hasOwnProperty(abKey)) {
         const abPlay = calculatePlay(
           [costA, costB],
@@ -472,7 +487,10 @@ function updatePlaysTable([$costTable, $pointsTable]: [
           oddsPoints: oddsPointsC,
         } = $pointsTable[driverC];
 
-        const abcKey = [driverA, driverB, driverC].sort().join(",");
+        const abcKey = calculateKey(
+          [driverA, driverB, driverC],
+          [costA, costB, costC]
+        );
         if (!playsByKey.hasOwnProperty(abcKey)) {
           const abcPlay = calculatePlay(
             [costA, costB, costC],
@@ -498,7 +516,10 @@ function updatePlaysTable([$costTable, $pointsTable]: [
             oddsPoints: oddsPointsD,
           } = $pointsTable[driverD];
 
-          const abcdKey = [driverA, driverB, driverC, driverD].sort().join(",");
+          const abcdKey = calculateKey(
+            [driverA, driverB, driverC, driverD],
+            [costA, costB, costC, costD]
+          );
           if (!playsByKey.hasOwnProperty(abcdKey)) {
             const abcdPlay = calculatePlay(
               [costA, costB, costC, costD],
