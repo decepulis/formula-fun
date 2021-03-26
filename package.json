@@ -8,10 +8,11 @@
     "start": "sirv public --host",
     "validate": "svelte-check",
 
-    "naive": "node ./validate/validateNaive.js",
-    "cost": "node ./validate/validateCostWeighted.js",
-    "odds": "node ./validate/validateOddsWeighted.js",
-    "optimal": "node ./validate/calculateOptimal.js"
+    "naive": "node ./validate/2020/validateNaive.js",
+    "cost": "node ./validate/2020/validateCostWeighted.js",
+    "odds": "node ./validate/2020/validateOddsWeighted.js",
+    "optimal": "node ./validate/2020/calculateOptimal.js",
+    "sum": "node ./validate/2020/calculateSums.js"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
