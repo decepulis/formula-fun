@@ -1,10 +1,12 @@
 <script lang="ts">
+  import SelectRace from "./SelectRace.svelte";
   import OddsTable from "./OddsTable.svelte";
   import PlaysTable from "./PlaysTable.svelte";
 </script>
 
 <main>
   <h1>Formula Fun</h1>
+  <SelectRace />
   <OddsTable />
   <PlaysTable />
 </main>

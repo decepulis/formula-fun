@@ -1,11 +1,27 @@
 <script lang="ts">
-  import { enabledTable } from "../stores";
+  import { enabledTables, activeRaceIndex } from "../stores";
+
+  import { season } from "../season";
 
   import type { Driver } from "../types";
   export let driver: Driver;
+
+  $: {
+    if (typeof $enabledTables[$activeRaceIndex] === "undefined") {
+      const activeOdds = season[$activeRaceIndex].odds;
+      const drivers = Object.keys(activeOdds);
+      const enabledDriverEntries = drivers.map((driver) => [driver, true]);
+      $enabledTables[$activeRaceIndex] = Object.fromEntries(
+        enabledDriverEntries
+      );
+    }
+  }
 </script>
 
-<input type="checkbox" bind:checked={$enabledTable[driver]} />
+<input
+  type="checkbox"
+  bind:checked={$enabledTables[$activeRaceIndex][driver]}
+/>
 
 <style>
   input {

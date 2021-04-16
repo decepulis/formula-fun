@@ -7,12 +7,15 @@
     costTable,
     pointsTable,
     oddsTable,
-    enabledTable,
-    predictionTable,
+    enabledTables,
+    predictionTables,
+    activeRaceIndex,
   } from "./stores";
   import Table from "./Table.svelte";
   import type { Column, CostRow, Driver, PointsRow } from "./types";
 
+  $: enabledTable = $enabledTables[$activeRaceIndex];
+  $: predictionTable = $predictionTables[$activeRaceIndex];
   $: drivers = Object.keys($oddsTable);
   interface TableRow {
     driver: string;
@@ -34,7 +37,7 @@
       label: "",
       accessor: "driver",
       sortDisabled: false,
-      sortValue: (accessedValue: Driver) => $enabledTable[accessedValue],
+      sortValue: (accessedValue: Driver) => enabledTable[accessedValue],
       componentFn: (row, accessedValue: Driver) => ({
         this: EnabledDriverCheckbox,
         props: { driver: accessedValue },
@@ -70,7 +73,7 @@
       accessor: "driver",
       colspan: 3,
       sortDisabled: false,
-      sortValue: (accessedValue: Driver) => $predictionTable[accessedValue],
+      sortValue: (accessedValue: Driver) => predictionTable[accessedValue],
       componentFn: (row, accessedValue: Driver) => ({
         this: PredictionInput,
         props: { driver: accessedValue },

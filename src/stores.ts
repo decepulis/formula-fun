@@ -43,9 +43,18 @@ export const driverTeam: Record<Driver, Team> = {
   Latifi: "Williams",
 };
 
-const initialOddsTable = Object.values(season)[0];
+const currentRaceIndex = season.length - 1;
+const initialRaceIndex: number =
+  JSON.parse(localStorage.getItem("raceIndex")) ?? currentRaceIndex;
+export const activeRaceIndex = writable(initialRaceIndex);
+activeRaceIndex.subscribe((value) =>
+  localStorage.setItem("raceIndex", JSON.stringify(value))
+);
 
-export const oddsTable = writable(initialOddsTable);
+function updateOddsTable($activeRaceIndex: number): OddsTable {
+  return season[$activeRaceIndex].odds;
+}
+export const oddsTable = derived(activeRaceIndex, updateOddsTable);
 
 // The algorithm for the cost table is a bit weird.
 //
@@ -201,42 +210,20 @@ function updateCostTable([$percentTable, { adjAvg }]: [
 
 export const costTable = derived([percentTable, adjustment], updateCostTable);
 
-const defaultPredictionTable: PredictionTable = {
-  Verstappen: 20,
-  Hamilton: 18,
-  Bottas: 16,
-  Perez: 14,
-  Ricciardo: 12,
-  Norris: 10,
-  Gasly: 8,
-  Leclerc: 6,
-  Stroll: 4,
-  Vettel: 3,
-  Tsunoda: 2,
-  Alonso: 1,
-  Sainz: 0,
-  Ocon: 0,
-  Raikkonnen: 0,
-  Giovinazzi: 0,
-  Russell: 0,
-  Latifi: 0,
-  Schumacher: 0,
-  Mazepin: 0,
-};
-
-const initialPredictionTable =
-  JSON.parse(localStorage.getItem("predictionTable")) ?? defaultPredictionTable;
-export const predictionTable = writable(initialPredictionTable);
-predictionTable.subscribe((value) =>
-  localStorage.setItem("predictionTable", JSON.stringify(value))
+const initialPredictionTables: PredictionTable[] =
+  JSON.parse(localStorage.getItem("predictionTables")) ?? [];
+export const predictionTables = writable(initialPredictionTables);
+predictionTables.subscribe((value) =>
+  localStorage.setItem("predictionTables", JSON.stringify(value))
 );
 
 // Now, let's figure out how much each player is worth using our three algorithms!
-function updatePointsTable([$predictionTable, $costTable, $percentTable]: [
-  PredictionTable,
-  CostTable,
-  PercentTable
-]): PointsTable {
+function updatePointsTable([
+  $activeRaceIndex,
+  $predictionTables,
+  $costTable,
+  $percentTable,
+]: [number, PredictionTable[], CostTable, PercentTable]): PointsTable {
   const pointsTable: { [driver: string]: PointsRow } = {};
   // What's available cost? stay tuned for Algorithm 2.
   const availableCost = Object.values($costTable).reduce(
@@ -245,10 +232,11 @@ function updatePointsTable([$predictionTable, $costTable, $percentTable]: [
   );
 
   // Iterate through the cost table and run our three algorithms along the way
-  for (const driver of Object.keys($predictionTable)) {
+  const activePredictionTable = $predictionTables[$activeRaceIndex];
+  for (const driver of Object.keys($costTable)) {
     // -- Algorithm 1: Rank Algorithm --
     // We just let the user input what they think the driver's gonna get
-    const predictionPoints = $predictionTable[driver];
+    const predictionPoints = activePredictionTable?.[driver] ?? 0;
 
     // -- Algorithm 2: Cost Algorithm --
     // All points are distributed among the racers
@@ -307,19 +295,16 @@ function updatePointsTable([$predictionTable, $costTable, $percentTable]: [
 }
 
 export const pointsTable = derived(
-  [predictionTable, costTable, percentTable],
+  [activeRaceIndex, predictionTables, costTable, percentTable],
   updatePointsTable
 );
 
-const defaultEnabledTable = Object.fromEntries(
-  Object.entries(initialOddsTable).map(([driver]) => [driver, true])
-) as EnabledTable;
-const initialEnabledTable =
-  JSON.parse(localStorage.getItem("enabledTable")) ?? defaultEnabledTable;
+const initialEnabledTables: EnabledTable[] =
+  JSON.parse(localStorage.getItem("enabledTables")) ?? [];
 
-export const enabledTable = writable(initialEnabledTable);
-enabledTable.subscribe((value) =>
-  localStorage.setItem("enabledTable", JSON.stringify(value))
+export const enabledTables = writable(initialEnabledTables);
+enabledTables.subscribe((value) =>
+  localStorage.setItem("enabledTables", JSON.stringify(value))
 );
 
 // Finally, let's see what we can come up with for $100...

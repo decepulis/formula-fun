@@ -1,10 +1,12 @@
 <script lang="ts">
   import PointsScoreCell from "./components/PointsScoreCell.svelte";
 
-  import { enabledTable, playsTable } from "./stores";
+  import { activeRaceIndex, enabledTables, playsTable } from "./stores";
 
   import Table from "./Table.svelte";
   import type { Driver, PlaysRow } from "./types";
+
+  $: enabledTable = $enabledTables[$activeRaceIndex];
 
   const columns = [
     {
@@ -84,7 +86,7 @@
 
   $: rowFilter = (row: PlaysRow) => {
     const driversAreEnabled = row.drivers.every(
-      (driver) => $enabledTable[driver]
+      (driver) => enabledTable[driver]
     );
     const driversAreInSearchString =
       searchArray.length > 0

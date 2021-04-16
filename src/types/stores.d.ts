@@ -43,6 +43,12 @@ export interface OddsRow {
 }
 export type OddsTable = Record<Driver, OddsRow>;
 
+type Race = {
+  race: string;
+  odds: OddsTable;
+};
+type Season = race[];
+
 export interface PercentRow {
   p1: Percent;
   p3: Percent;

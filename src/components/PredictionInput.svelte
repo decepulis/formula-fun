@@ -1,11 +1,33 @@
 <script lang="ts">
-  import { predictionTable } from "../stores";
+  import { predictionTables, activeRaceIndex, costTable } from "../stores";
 
   import type { Driver } from "../types";
   export let driver: Driver;
+
+  $: {
+    if (typeof $predictionTables[$activeRaceIndex] === "undefined") {
+      const costTableEntries = Object.entries($costTable);
+      costTableEntries.sort(
+        ([, { cost: costA }], [, { cost: costB }]) => costB - costA
+      );
+
+      const scores = [20, 18, 16, 14, 12, 10, 8, 6, 3, 2, 1];
+      const initialPredictionEntries = costTableEntries.map(
+        ([driver], index) => [driver, scores[index] ?? 0]
+      );
+
+      $predictionTables[$activeRaceIndex] = Object.fromEntries(
+        initialPredictionEntries
+      );
+    }
+  }
 </script>
 
-<input type="number" min="0" bind:value={$predictionTable[driver]} />
+<input
+  type="number"
+  min="0"
+  bind:value={$predictionTables[$activeRaceIndex][driver]}
+/>
 
 <style>
   input {
