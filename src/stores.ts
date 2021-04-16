@@ -43,13 +43,8 @@ export const driverTeam: Record<Driver, Team> = {
   Latifi: "Williams",
 };
 
-const currentRaceIndex = season.length - 1;
-const initialRaceIndex: number =
-  JSON.parse(localStorage.getItem("raceIndex")) ?? currentRaceIndex;
+const initialRaceIndex = season.length - 1;
 export const activeRaceIndex = writable(initialRaceIndex);
-activeRaceIndex.subscribe((value) =>
-  localStorage.setItem("raceIndex", JSON.stringify(value))
-);
 
 function updateOddsTable($activeRaceIndex: number): OddsTable {
   return season[$activeRaceIndex].odds;
@@ -236,6 +231,7 @@ function updatePointsTable([
   for (const driver of Object.keys($costTable)) {
     // -- Algorithm 1: Rank Algorithm --
     // We just let the user input what they think the driver's gonna get
+
     const predictionPoints = activePredictionTable?.[driver] ?? 0;
 
     // -- Algorithm 2: Cost Algorithm --
