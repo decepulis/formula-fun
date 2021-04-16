@@ -149,6 +149,7 @@ const bonusLookup = {
   3: 4.5,
   2: 5,
   1: 5,
+  0: 5,
 };
 const points = {
   1: 20,
