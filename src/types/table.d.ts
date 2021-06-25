@@ -38,4 +38,5 @@ export type ComponentColumn =
   | SortableComponentColumn
   | UnsortableComponentColumn;
 
-export type Column = FormatColumn | ComponentColumn;
+export type Column = FormatColumn | ComponentColumn | null;
+export type NoNullColumn = FormatColumn | ComponentColumn;

@@ -5,12 +5,13 @@
     FormatColumn,
     ComponentColumn,
     SortableComponentColumn,
+    NoNullColumn
   } from "./types";
 
-  const isComponentColumn = (column: Column): column is ComponentColumn =>
+  const isComponentColumn = (column: NoNullColumn): column is ComponentColumn =>
     column.hasOwnProperty("componentFn");
   const isSortableComponentColumn = (
-    column: Column
+    column: NoNullColumn
   ): column is SortableComponentColumn =>
     isComponentColumn(column) && column.hasOwnProperty("sortValue");
 
@@ -18,7 +19,11 @@
   export let columns: Array<Column>;
   export let rowFilter = (row: Row) => true;
 
-  let sortColumn = columns.find((column) => column.defaultSort);
+  let noNullColumns: NoNullColumn[] = []
+  $: noNullColumns = columns.filter(column => column !== null)
+
+
+  $: sortColumn = noNullColumns.find((column) => column.defaultSort);
   let sortOrder: "ascending" | "descending" =
     sortColumn?.sortFirst ?? "descending";
   let toggleSort = (column: Column) => {
@@ -101,8 +106,8 @@
 {/if}
 <table>
   <thead>
-    {#each columns as column}
-      <th class="sort-header" scope="col" colspan={column.colspan ?? 1}>
+    {#each noNullColumns as column}
+      <th class="sort-header" scope="col" colspan={column.colspan ?? 1} >
         {#if column.sortDisabled}
           {column.label}
         {:else}
@@ -121,7 +126,7 @@
   <tbody>
     {#each slicedRows as row}
       <tr>
-        {#each columns as column}
+        {#each noNullColumns as column}
           <td colspan={column.colspan ?? 1}>
             {#if isComponentColumn(column)}
               <svelte:component
@@ -208,6 +213,7 @@
     transition: transform 0.2s ease-in-out;
   }
   .sort-button.active:before {
+    content: "\25B6";
     transform: rotate(-90deg);
   }
   .sort-button.active.descending:before {

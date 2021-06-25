@@ -46,8 +46,9 @@ export type OddsTable = Record<Driver, OddsRow>;
 type Race = {
   race: string;
   odds: OddsTable;
+  results?: Driver[];
 };
-type Season = race[];
+type Season = Race[];
 
 export interface PercentRow {
   p1: Percent;
@@ -81,16 +82,22 @@ export interface PointsRow {
   predictionPoints: number;
   costPoints: number;
   oddsPoints: number;
+  finalPoints?: number;
 }
 export type PointsTable = Record<Driver, PointsRow>;
 
-export type PointsKey = "predictionPoints" | "costPoints" | "oddsPoints";
+export type PointsKey =
+  | "predictionPoints"
+  | "costPoints"
+  | "oddsPoints"
+  | "finalPoints";
 export type ScoreKey = "predictionScore" | "costScore" | "oddsScore";
 export interface Play {
   cost: number;
   predictionPoints: number;
   costPoints: number;
   oddsPoints: number;
+  finalPoints: number | undefined;
 }
 export interface PlaysRow extends Play {
   drivers: Driver[];

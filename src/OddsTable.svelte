@@ -23,6 +23,7 @@
     bonus: CostRow["bonus"];
     costPoints: PointsRow["costPoints"];
     oddsPoints: PointsRow["oddsPoints"];
+    finalPoints: PointsRow["finalPoints"];
   }
   let rows: TableRow[] = [];
   $: rows = drivers.map((driver) => ({
@@ -31,8 +32,11 @@
     bonus: $costTable[driver].bonus,
     costPoints: $pointsTable[driver].costPoints,
     oddsPoints: $pointsTable[driver].oddsPoints,
+    finalPoints: $pointsTable[driver].finalPoints,
   }));
-  const columns: Column[] = [
+  $: showFinalPoints = rows.some(row => typeof row.finalPoints !== 'undefined')
+  let columns: Column[] = []
+  $: columns = [
     {
       label: "",
       accessor: "driver",
@@ -68,6 +72,12 @@
       formatter: (accessedValue: number) => `x${accessedValue}`,
       colspan: 2,
     },
+    !showFinalPoints ? null : {
+      label: "Final Points",
+      accessor: "finalPoints",
+      formatter: (accessedValue: number) => accessedValue.toFixed(),
+      colspan: 2,
+    },
     {
       label: "Prediction Strat",
       accessor: "driver",
@@ -89,7 +99,7 @@
       label: "Odds Strat",
       accessor: "oddsPoints",
       formatter: (accessedValue: number) => accessedValue.toFixed(2),
-      colspan: 3,
+      colspan: 3
     },
   ];
 </script>

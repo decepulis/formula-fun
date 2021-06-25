@@ -229,7 +229,16 @@ function updatePointsTable([
 
   // Iterate through the cost table and run our three algorithms along the way
   const activePredictionTable = $predictionTables[$activeRaceIndex];
-  for (const driver of Object.keys($costTable)) {
+  const activeResultsTable = season[$activeRaceIndex].results;
+  const drivers = Object.keys($costTable) as Driver[];
+  for (const driver of drivers) {
+    // -- Not An Algorithm: Final Result --
+    // If available, how many points did the driver actually get?
+    const finalPoints =
+      typeof activeResultsTable !== "undefined"
+        ? points[activeResultsTable.indexOf(driver) + 1] ?? 0
+        : undefined;
+
     // -- Algorithm 1: Rank Algorithm --
     // We just let the user input what they think the driver's gonna get
 
@@ -285,6 +294,7 @@ function updatePointsTable([
       predictionPoints,
       costPoints,
       oddsPoints,
+      finalPoints,
     };
   }
 
@@ -306,13 +316,16 @@ enabledTables.subscribe((value) =>
 
 // Finally, let's see what we can come up with for $100...
 const budget = 100;
+const isNumberArray = (array: number[] | undefined[]): array is number[] =>
+  array.every((item) => typeof item === "number");
 
 function calculatePlay(
   costArr: number[],
   bonusArr: number[],
   predictionPointsArr: number[],
   costPointsArr: number[],
-  oddsPointsArr: number[]
+  oddsPointsArr: number[],
+  finalPointsArr: number[] | undefined[]
 ): Play | undefined {
   const cost = costArr.reduce((sum, cost) => sum + (cost ?? 0), 0);
 
@@ -338,17 +351,27 @@ function calculatePlay(
         0
       );
 
+    const finalTotal = isNumberArray(finalPointsArr)
+      ? budgetPoints +
+        // why is typescript making me do this?
+        (finalPointsArr as number[]).reduce(
+          (sum, points, index) => sum + points * bonusArr[index],
+          0
+        )
+      : undefined;
+
     return {
       cost,
       predictionPoints: predictionTotal,
       costPoints: costTotal,
       oddsPoints: oddsTotal,
+      finalPoints: finalTotal,
     };
   }
   return undefined;
 }
 
-const scoreKeys: Record<PointsKey, ScoreKey> = {
+const scoreKeys: { [key in PointsKey]?: ScoreKey } = {
   predictionPoints: "predictionScore",
   costPoints: "costScore",
   oddsPoints: "oddsScore",
@@ -404,7 +427,7 @@ function updatePlaysTable([$costTable, $pointsTable]: [
   PointsTable
 ]): PlaysTable {
   // This is a basic knapsack problem, says the internet.
-  // When I get around to optimizing, I'll have to look at that.
+  // If I get around to optimizing, I'll have to look at that.
   //
   // For now, though, I'll just try every combination.
   // This is naive. Please don't judge me.
@@ -419,6 +442,7 @@ function updatePlaysTable([$costTable, $pointsTable]: [
       predictionPoints: predictionPointsA,
       costPoints: costPointsA,
       oddsPoints: oddsPointsA,
+      finalPoints: finalPointsA,
     } = $pointsTable[driverA];
 
     const aKey = calculateKey([driverA], [costA]);
@@ -427,7 +451,8 @@ function updatePlaysTable([$costTable, $pointsTable]: [
       [bonusA],
       [predictionPointsA],
       [costPointsA],
-      [oddsPointsA]
+      [oddsPointsA],
+      [finalPointsA]
     );
 
     playsByKey[aKey] = aPlay;
@@ -442,6 +467,7 @@ function updatePlaysTable([$costTable, $pointsTable]: [
         predictionPoints: predictionPointsB,
         costPoints: costPointsB,
         oddsPoints: oddsPointsB,
+        finalPoints: finalPointsB,
       } = $pointsTable[driverB];
 
       const abKey = calculateKey([driverA, driverB], [costA, costB]);
@@ -451,7 +477,8 @@ function updatePlaysTable([$costTable, $pointsTable]: [
           [bonusA, bonusB],
           [predictionPointsA, predictionPointsB],
           [costPointsA, costPointsB],
-          [oddsPointsA, oddsPointsB]
+          [oddsPointsA, oddsPointsB],
+          [finalPointsA, finalPointsB]
         );
 
         playsByKey[abKey] = abPlay;
@@ -467,6 +494,7 @@ function updatePlaysTable([$costTable, $pointsTable]: [
           predictionPoints: predictionPointsC,
           costPoints: costPointsC,
           oddsPoints: oddsPointsC,
+          finalPoints: finalPointsC,
         } = $pointsTable[driverC];
 
         const abcKey = calculateKey(
@@ -479,7 +507,8 @@ function updatePlaysTable([$costTable, $pointsTable]: [
             [bonusA, bonusB, bonusC],
             [predictionPointsA, predictionPointsB, predictionPointsC],
             [costPointsA, costPointsB, costPointsC],
-            [oddsPointsA, oddsPointsB, oddsPointsC]
+            [oddsPointsA, oddsPointsB, oddsPointsC],
+            [finalPointsA, finalPointsB, finalPointsC]
           );
 
           playsByKey[abcKey] = abcPlay;
@@ -496,6 +525,7 @@ function updatePlaysTable([$costTable, $pointsTable]: [
             predictionPoints: predictionPointsD,
             costPoints: costPointsD,
             oddsPoints: oddsPointsD,
+            finalPoints: finalPointsD,
           } = $pointsTable[driverD];
 
           const abcdKey = calculateKey(
@@ -513,7 +543,8 @@ function updatePlaysTable([$costTable, $pointsTable]: [
                 predictionPointsD,
               ],
               [costPointsA, costPointsB, costPointsC, costPointsD],
-              [oddsPointsA, oddsPointsB, oddsPointsC, oddsPointsD]
+              [oddsPointsA, oddsPointsB, oddsPointsC, oddsPointsD],
+              [finalPointsA, finalPointsB, finalPointsC, finalPointsD]
             );
 
             playsByKey[abcdKey] = abcdPlay;

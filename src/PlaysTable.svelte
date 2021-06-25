@@ -4,11 +4,13 @@
   import { activeRaceIndex, enabledTables, playsTable } from "./stores";
 
   import Table from "./Table.svelte";
-  import type { Driver, PlaysRow } from "./types";
+  import type { Column, Driver, PlaysRow } from "./types";
 
   $: enabledTable = $enabledTables[$activeRaceIndex];
+  $: showFinalPoints = $playsTable.every(play => typeof play.finalPoints === 'number');
 
-  const columns = [
+  let columns: Column[] = []
+  $: columns = [
     {
       label: "Drivers",
       accessor: "drivers",
@@ -22,6 +24,13 @@
       accessor: "cost",
       formatter: (accessedValue: number) => `€${accessedValue}`,
       colspan: 3,
+    },
+    !showFinalPoints ? null : {
+      label: "Final Points",
+      accessor: "finalPoints",
+      formatter: (accessedValue: number) => accessedValue.toFixed(1),
+      colspan: 3,
+      defaultSort: showFinalPoints,
     },
     {
       label: "Prediction Score",
@@ -62,7 +71,7 @@
     {
       label: "Combined Score",
       accessor: "combinedScore",
-      defaultSort: true,
+      defaultSort: !showFinalPoints,
       formatter: (accessedValue: number) => accessedValue.toFixed(2),
       colspan: 3,
     },
