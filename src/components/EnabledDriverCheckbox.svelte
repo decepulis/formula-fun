@@ -7,7 +7,7 @@
   export let driver: Driver;
 
   $: {
-    if (typeof $enabledTables[$activeRaceIndex] === "undefined") {
+    if (!$enabledTables[$activeRaceIndex]) {
       const activeOdds = season[$activeRaceIndex].odds;
       const drivers = Object.keys(activeOdds);
       const enabledDriverEntries = drivers.map((driver) => [driver, true]);

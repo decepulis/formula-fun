@@ -5,7 +5,7 @@
   export let driver: Driver;
 
   $: {
-    if (typeof $predictionTables[$activeRaceIndex] === "undefined") {
+    if (!$predictionTables[$activeRaceIndex]) {
       const costTableEntries = Object.entries($costTable);
       costTableEntries.sort(
         ([, { cost: costA }], [, { cost: costB }]) => costB - costA
