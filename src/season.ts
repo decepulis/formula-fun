@@ -365,7 +365,7 @@ export const season: Season = [
       "Stroll",
       "Alonso",
       "Tsunoda",
-      "Raikkonen",
+      "Raikkonnen",
       "Vettel",
       "Ocon",
       "Ricciardo",
