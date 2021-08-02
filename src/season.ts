@@ -497,7 +497,6 @@ export const season: Season = [
     },
     results: [
       "Ocon",
-      "Vettel",
       "Hamilton",
       "Sainz",
       "Alonso",
@@ -510,8 +509,9 @@ export const season: Season = [
       "Ricciardo",
       "Schumacher",
       "Giovinazzi",
-      "Norris",
+      "Vettel",
       "Mazepin",
+      "Norris",
       "Stroll",
       "Leclerc",
       "Bottas",
