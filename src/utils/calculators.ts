@@ -175,6 +175,9 @@ export const getPlays = (priceTable: PriceTable, predictionTable: PredictionTabl
 		keyCopy.sort((keyA, keyB) => {
 			const costA = priceTable[keyA].price;
 			const costB = priceTable[keyB].price;
+			if (costA === costB) {
+				return keyA > keyB ? 1 : -1;
+			}
 			return costB - costA;
 		});
 

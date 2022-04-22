@@ -36,6 +36,19 @@ export enum Teams {
 	Haas = 'Haas'
 }
 
+export const teamColors: Record<Teams, string> = {
+	[Teams.Mercedes]: '#009e8e',
+	[Teams.RedBull]: '#0600ef',
+	[Teams.Ferrari]: '#dc0000',
+	[Teams.McLaren]: '#ff8700',
+	[Teams.Alpine]: '#0090ff',
+	[Teams.AstonMartin]: '#006f62',
+	[Teams.AlphaTauri]: '#2b4562',
+	[Teams.AlfaRomeo]: '#900000',
+	[Teams.Williams]: '#005aff',
+	[Teams.Haas]: '#666666'
+};
+
 export type Keys = Drivers | Teams;
 
 export const driverTeams: Record<Drivers, Teams> = {
@@ -93,6 +106,53 @@ export const races: Race[] = [
 			Latifi: { o1: 300000, o3: 200000, o6: 50000, o10: 2800 },
 			Schumacher: { o1: 25000, o3: 2000, o6: 300, o10: 150 },
 			Magnussen: { o1: 25000, o3: 2000, o6: 300, o10: 125 }
+		},
+		results: [
+			Drivers.Leclerc,
+			Drivers.Perez,
+			Drivers.Russell,
+			Drivers.Hamilton,
+			Drivers.Norris,
+			Drivers.Ricciardo,
+			Drivers.Ocon,
+			Drivers.Bottas,
+			Drivers.Gasly,
+			Drivers.Albon,
+			Drivers.Zhou,
+			Drivers.Stroll,
+			Drivers.Schumacher,
+			Drivers.Magnussen,
+			Drivers.Tsunoda,
+			Drivers.Latifi,
+			Drivers.Alonso,
+			Drivers.Verstappen,
+			Drivers.Vettel,
+			Drivers.Sainz
+		]
+	},
+	{
+		name: 'Italy',
+		odds: {
+			Hamilton: { o1: 1100, o3: 200, o6: -275, o10: -500 },
+			Russell: { o1: 3300, o3: 450, o6: -225, o10: -400 },
+			Verstappen: { o1: 175, o3: -300, o6: -400, o10: -500 },
+			Perez: { o1: 1400, o3: 125, o6: -275, o10: -500 },
+			Leclerc: { o1: 110, o3: -350, o6: -500, o10: -600 },
+			Sainz: { o1: 700, o3: -135, o6: -300, o10: -500 },
+			Ricciardo: { o1: 10000, o3: 1200, o6: 175, o10: -250 },
+			Norris: { o1: 8000, o3: 900, o6: 135, o10: -300 },
+			Stroll: { o1: 100000, o3: 25000, o6: 5000, o10: 600 },
+			Vettel: { o1: 100000, o3: 25000, o6: 5000, o10: 600 },
+			Alonso: { o1: 8000, o3: 900, o6: 135, o10: -300 },
+			Ocon: { o1: 15000, o3: 1400, o6: 250, o10: -250 },
+			Gasly: { o1: 25000, o3: 2200, o6: 300, o10: -165 },
+			Tsunoda: { o1: 50000, o3: 6600, o6: 1400, o10: 225 },
+			Bottas: { o1: 25000, o3: 3300, o6: 333, o10: -150 },
+			Zhou: { o1: 50000, o3: 20000, o6: 2500, o10: 275 },
+			Albon: { o1: 100000, o3: 100000, o6: 10000, o10: 700 },
+			Latifi: { o1: 200000, o3: 150000, o6: 25000, o10: 2500 },
+			Schumacher: { o1: 50000, o3: 5000, o6: 500, o10: 150 },
+			Magnussen: { o1: 50000, o3: 5000, o6: 500, o10: 125 }
 		}
 	}
 ];

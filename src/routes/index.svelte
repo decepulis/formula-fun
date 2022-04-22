@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { races, Drivers, Teams } from '../2022';
+	import { races, Drivers, Teams, driverTeams, teamColors } from '../2022';
 	import {
 		getPercents,
 		getAdjustment,
@@ -10,7 +10,7 @@
 
 	import type { Race } from '../types';
 
-	const race = races.find(({ name }) => name === 'Australia') as Race;
+	const race = races.find(({ name }) => name === 'Italy') as Race;
 
 	const odds = race.odds;
 	const percents = getPercents(odds);
@@ -36,13 +36,17 @@
 		</tr>
 	</thead><tbody>
 		{#each Object.values(Drivers) as driver}
-			<tr>
+			<tr style="background-color:{teamColors[driverTeams[driver]]}">
 				<td>
 					<input type="checkbox" bind:checked={filters[driver]} />
 				</td>
-				<td>{driver}</td>
-				<td>{prices[driver].price}</td>
-				<td>{prices[driver].bonus}</td>
+				<td>
+					<strong>{driver}</strong>
+					<br />
+					<i>{driverTeams[driver]}</i>
+				</td>
+				<td>&euro;{prices[driver].price}</td>
+				<td>&times;{prices[driver].bonus}</td>
 				<td>{predictions[driver].pricePrediction.toFixed(2)}</td>
 			</tr>
 		{/each}
@@ -60,12 +64,12 @@
 		</tr>
 	</thead><tbody>
 		{#each Object.values(Teams) as team}
-			<tr>
+			<tr style="background-color:{teamColors[team]}">
 				<td>
 					<input type="checkbox" bind:checked={filters[team]} />
 				</td>
 				<td>{team}</td>
-				<td>{prices[team].price}</td>
+				<td>&euro;{prices[team].price}</td>
 				<td>{predictions[team].pricePrediction.toFixed(2)}</td>
 			</tr>
 		{/each}
@@ -84,10 +88,28 @@
 	<tbody>
 		{#each Object.values(filteredPlays) as play}
 			<tr>
-				<td>{play.keys.join(', ')}</td>
-				<td>${play.price}</td>
+				<td>
+					{#each play.keys as key, index}
+						{@const color = teamColors[driverTeams[key]] || teamColors[key]}
+						{@const spacer = index !== play.keys.length - 1 ? ', ' : ''}
+						<span style="background-color:{color}">{key}</span>{spacer}
+					{/each}
+				</td>
+				<td>&euro;{play.price}</td>
 				<td>{play.predictionPoints.toFixed(2)}</td>
 			</tr>
 		{/each}
 	</tbody>
 </table>
+
+<style>
+	:global(body) {
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+			'Open Sans', 'Helvetica Neue', sans-serif;
+		background-color: #333;
+		color: white;
+	}
+	td {
+		padding: 0.125em 0.25em;
+	}
+</style>
