@@ -186,8 +186,8 @@ export const getPlays = (priceTable: PriceTable, predictionTable: PredictionTabl
 
 	const calculatePlay = (keys: Keys[]): Play | undefined => {
 		const priceOfPlay = keys.reduce((acc, key) => {
-			const { price, bonus } = priceTable[key];
-			return acc + price * bonus;
+			const { price } = priceTable[key];
+			return acc + price;
 		}, 0);
 
 		if (priceOfPlay > budget) {
