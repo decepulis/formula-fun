@@ -10,7 +10,7 @@
 
 	import type { Race } from '../types';
 
-	const race = races.find(({ name }) => name === 'Monaco') as Race;
+	const race = races.find(({ name }) => name === 'Baku') as Race;
 
 	const odds = race.odds;
 	const percents = getPercents(odds);
@@ -123,7 +123,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each Object.values(filteredPlays) as play}
+				{#each Object.values(filteredPlays).slice(0, 250) as play}
 					<tr>
 						<td>
 							{#each play.keys as key, index}
