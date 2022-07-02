@@ -246,7 +246,7 @@ export const races: Race[] = [
 			Drivers.Albon,
 			Drivers.Tsunoda,
 			Drivers.Schumacher,
-			Drivers.Magnussen,
+			Drivers.Magnussen
 		]
 	},
 	{
@@ -272,6 +272,78 @@ export const races: Race[] = [
 			Latifi: { o1: 300000, o3: 100000, o6: 10000, o10: 2500 },
 			Schumacher: { o1: 100000, o3: 5000, o6: 1600, o10: 400 },
 			Magnussen: { o1: 50000, o3: 3300, o6: 600, o10: 150 }
+		},
+		results: [
+			Drivers.Verstappen,
+			Drivers.Perez,
+			Drivers.Russell,
+			Drivers.Hamilton,
+			Drivers.Gasly,
+			Drivers.Vettel,
+			Drivers.Alonso,
+			Drivers.Ricciardo,
+			Drivers.Norris,
+			Drivers.Ocon,
+			Drivers.Bottas,
+			Drivers.Albon,
+			Drivers.Tsunoda,
+			Drivers.Schumacher,
+			Drivers.Latifi,
+			Drivers.Stroll,
+			Drivers.Magnussen,
+			Drivers.Zhou,
+			Drivers.Leclerc,
+			Drivers.Sainz
+		]
+	},
+	{
+		name: 'Canada',
+		results: [
+			Drivers.Verstappen,
+			Drivers.Sainz,
+			Drivers.Hamilton,
+			Drivers.Russell,
+			Drivers.Leclerc,
+			Drivers.Ocon,
+			Drivers.Bottas,
+			Drivers.Zhou,
+			Drivers.Alonso,
+			Drivers.Stroll,
+			Drivers.Ricciardo,
+			Drivers.Vettel,
+			Drivers.Albon,
+			Drivers.Gasly,
+			Drivers.Norris,
+			Drivers.Latifi,
+			Drivers.Magnussen,
+			Drivers.Tsunoda,
+			Drivers.Schumacher,
+			Drivers.Perez
+		]
+	},
+	{
+		name: 'Britain',
+		odds: {
+			Hamilton: { o1: 750, o3: -120, o6: -350, o10: -500 },
+			Russell: { o1: 1400, o3: 225, o6: -275, o10: -450 },
+			Verstappen: { o1: 120, o3: -275, o6: -400, o10: -600 },
+			Perez: { o1: 1600, o3: 175, o6: -275, o10: -450 },
+			Leclerc: { o1: 200, o3: -225, o6: -350, o10: -500 },
+			Sainz: { o1: 800, o3: -110, o6: -300, o10: -450 },
+			Ricciardo: { o1: 15000, o3: 4000, o6: 450, o10: -110 },
+			Norris: { o1: 5000, o3: 750, o6: 100, o10: -275 },
+			Stroll: { o1: 25000, o3: 5000, o6: 1000, o10: 175 },
+			Vettel: { o1: 25000, o3: 5000, o6: 450, o10: 125 },
+			Alonso: { o1: 10000, o3: 1600, o6: 135, o10: -250 },
+			Ocon: { o1: 25000, o3: 5000, o6: 330, o10: -140 },
+			Gasly: { o1: 50000, o3: 5000, o6: 400, o10: -140 },
+			Tsunoda: { o1: 100000, o3: 15000, o6: 1600, o10: 275 },
+			Bottas: { o1: 15000, o3: 2800, o6: 160, o10: -175 },
+			Zhou: { o1: 100000, o3: 15000, o6: 1600, o10: 185 },
+			Albon: { o1: 100000, o3: 25000, o6: 3300, o10: 275 },
+			Latifi: { o1: 300000, o3: 100000, o6: 20000, o10: 2500 },
+			Schumacher: { o1: 150000, o3: 20000, o6: 2500, o10: 450 },
+			Magnussen: { o1: 100000, o3: 20000, o6: 1600, o10: 185 }
 		}
 	}
 ];

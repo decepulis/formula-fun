@@ -48,6 +48,6 @@ export type PlaysTable = PlaysRow[];
 
 export type Race = {
 	name: string;
-	odds: OddsTable;
+	odds?: OddsTable;
 	results?: Drivers[];
 };
