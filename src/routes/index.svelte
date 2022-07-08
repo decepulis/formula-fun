@@ -10,7 +10,7 @@
 
 	import type { Race } from '../types';
 
-	const race = races.find(({ name }) => name === 'Britain') as Race;
+	const race = races.find(({ name }) => name === 'Austria') as Race;
 
 	const odds = race.odds;
 	const percents = getPercents(odds);
