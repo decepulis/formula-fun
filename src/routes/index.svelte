@@ -10,7 +10,8 @@
 
 	import type { Race } from '../types';
 
-	const race = races.find(({ name }) => name === 'Austria') as Race;
+	const raceName = 'France'
+	const race = races.find(({ name }) => name === raceName) as Race;
 
 	const odds = race.odds;
 	const percents = getPercents(odds);
@@ -48,7 +49,7 @@
 </script>
 
 <main>
-	<h1>Formula Fun!</h1>
+	<h1>Formula Fun! {raceName}!</h1>
 	<section id="drivers">
 		<h2>Drivers</h2>
 		<table>
