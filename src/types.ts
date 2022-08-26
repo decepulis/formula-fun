@@ -32,14 +32,13 @@ export interface PriceRow {
 
 export type PriceTable = Record<Drivers & Teams, PriceRow>;
 
-export type PredictionRow = {
-	pricePrediction: number;
-};
-export type PredictionTable = Record<Drivers & Teams, PredictionRow>;
+export type DriverPredictionTable = Record<Drivers, number>;
+export type TeamPredictionTable = Record<Teams, number>;
 
 export interface Play {
 	price: number;
-	predictionPoints: number;
+	algoPredictionPoints: number;
+	userPredictionPoints: number;
 }
 export interface PlaysRow extends Play {
 	keys: Keys[];

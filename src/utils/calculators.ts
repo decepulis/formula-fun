@@ -6,7 +6,8 @@ import type {
 	Adjustment,
 	PriceTable,
 	PriceRow,
-	PredictionTable,
+	DriverPredictionTable,
+	TeamPredictionTable,
 	PlaysTable,
 	Play
 } from '../types';
@@ -124,10 +125,7 @@ export const getPrices = (percentTable: PercentTable, { adjAvg }: Adjustment): P
 	};
 };
 
-export const getPredictions = (
-	percentTable: PercentTable,
-	priceTable: PriceTable
-): PredictionTable => {
+export const getDriverPredictions = (priceTable: PriceTable): DriverPredictionTable => {
 	const predictionTable = {};
 	// What's available price? stay tuned for Algorithm 2.
 	const availablePrice = Object.entries(priceTable).reduce((sum, [key, { price }]) => {
@@ -149,26 +147,62 @@ export const getPredictions = (
 	for (const driver of Object.values(Drivers)) {
 		const { price } = priceTable[driver];
 		const pricePrediction = availablePoints * (price / availablePrice);
-		predictionTable[driver] = {
-			pricePrediction
-		};
+		predictionTable[driver] = pricePrediction;
 	}
+
+	return predictionTable as DriverPredictionTable;
+};
+export const initializeUserDriverRankings = (
+	algoDriverPredictions: DriverPredictionTable
+): Drivers[] => {
+	const algoDriverPredictionEntries = Object.entries(algoDriverPredictions);
+	const sortedAlgoDriverPredictionEntries = algoDriverPredictionEntries.sort(
+		([, a], [, b]) => b - a
+	);
+	return sortedAlgoDriverPredictionEntries.map(([driver]) => driver) as Drivers[];
+};
+export const getUserDriverPredictions = (
+	userDriverRankings: Drivers[],
+	scoring: number[]
+): DriverPredictionTable => {
+	const userDriverPredictionEntries = userDriverRankings.map((driver, index) => [
+		driver,
+		scoring[index] ?? 0
+	]);
+	return Object.fromEntries(userDriverPredictionEntries);
+};
+
+export const getTeamPredictions = (
+	driverPredictionTable: DriverPredictionTable
+): TeamPredictionTable => {
+	const teamPredictionTable = {};
 	Object.entries(teamDrivers).forEach(([team, drivers]) => {
 		const pricePrediction =
 			drivers.reduce((sum, driver) => {
-				return sum + predictionTable[driver].pricePrediction;
+				return sum + driverPredictionTable[driver];
 			}, 0) / drivers.length;
 
-		predictionTable[team] = {
-			pricePrediction
-		};
+		teamPredictionTable[team] = pricePrediction;
 	});
-
-	return predictionTable;
+	return teamPredictionTable as TeamPredictionTable;
 };
 
 const budget = 100;
-export const getPlays = (priceTable: PriceTable, predictionTable: PredictionTable): PlaysTable => {
+export const getPlays = (
+	priceTable: PriceTable,
+	algoDriverPredictionTable: DriverPredictionTable,
+	algoTeamPredictionTable: TeamPredictionTable,
+	userDriverPredictionTable: DriverPredictionTable,
+	userTeamPredictionTable: TeamPredictionTable
+): PlaysTable => {
+	const algoPredictionTable = {
+		...algoDriverPredictionTable,
+		...algoTeamPredictionTable
+	};
+	const userPredictionTable = {
+		...userDriverPredictionTable,
+		...userTeamPredictionTable
+	};
 	const calculateId = (keys: Keys[]) => {
 		const keyCopy = [...keys];
 
@@ -194,14 +228,19 @@ export const getPlays = (priceTable: PriceTable, predictionTable: PredictionTabl
 			return undefined;
 		} else {
 			const budgetPoints = (budget - priceOfPlay) * 0.1;
-			const predictionSubtotal = keys.reduce((acc, key) => {
-				const { pricePrediction } = predictionTable[key];
-				return acc + pricePrediction;
-			}, 0);
+			const [algoPredictionSubtotal, userPredictionSubtotal] = keys.reduce(
+				([algoAcc, userAcc], key) => {
+					const algoPricePrediction = algoPredictionTable[key];
+					const userPricePrediction = userPredictionTable[key];
+					return [algoAcc + algoPricePrediction, userAcc + userPricePrediction];
+				},
+				[0, 0]
+			);
 
 			return {
 				price: priceOfPlay,
-				predictionPoints: budgetPoints + predictionSubtotal
+				algoPredictionPoints: budgetPoints + algoPredictionSubtotal,
+				userPredictionPoints: budgetPoints + userPredictionSubtotal
 			};
 		}
 	};
@@ -254,9 +293,6 @@ export const getPlays = (priceTable: PriceTable, predictionTable: PredictionTabl
 
 	return Object.entries(playsById)
 		.filter(([, play]) => play !== undefined)
-		.sort(([, playA], [, playB]) => {
-			return playB.predictionPoints - playA.predictionPoints;
-		})
 		.map(([id, play]) => ({
 			keys: id.split(',') as Keys[],
 			...play

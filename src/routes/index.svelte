@@ -1,26 +1,89 @@
 <script lang="ts">
+	import { flip } from 'svelte/animate';
+
 	import { races, Drivers, Teams, driverTeams, teamColors } from '../2022';
 	import {
 		getPercents,
 		getAdjustment,
 		getPrices,
-		getPredictions,
+		getDriverPredictions,
+		initializeUserDriverRankings,
+		getUserDriverPredictions,
+		getTeamPredictions,
 		getPlays
 	} from '../utils/calculators';
 
 	import type { Race } from '../types';
 
-	const raceName = 'Hungary'
+	const raceName = 'Hungary';
 	const race = races.find(({ name }) => name === raceName) as Race;
 
+	const scoring = [20, 18, 16, 14, 12, 10, 8, 6, 4, 3, 2, 1];
 	const odds = race.odds;
 	const percents = getPercents(odds);
 	const adjustment = getAdjustment(percents);
 	const prices = getPrices(percents, adjustment);
-	const predictions = getPredictions(percents, prices);
-	const plays = getPlays(prices, predictions);
 
-	let filters = {};
+	const algoDriverPredictions = getDriverPredictions(prices);
+	const algoTeamPredictions = getTeamPredictions(algoDriverPredictions);
+
+	let userDriverRankings = initializeUserDriverRankings(algoDriverPredictions);
+	let userDriverPredictions = getUserDriverPredictions(userDriverRankings, scoring);
+	$: userDriverPredictions = getUserDriverPredictions(userDriverRankings, scoring);
+	const userTeamPredictions = getTeamPredictions(userDriverPredictions);
+
+	const plays = getPlays(
+		prices,
+		algoDriverPredictions,
+		algoTeamPredictions,
+		userDriverPredictions,
+		userTeamPredictions
+	);
+
+	// What mode are we in?
+	let isUserModeChecked = true;
+	$: mode = isUserModeChecked ? 'User' : 'Algo';
+
+	// So what order are the drivers and teams in, then?
+	$: driversByAlgo = Object.values(Drivers)
+		.map((d) => [
+			d,
+			mode === 'User'
+				? userDriverRankings.length - userDriverRankings.indexOf(d)
+				: algoDriverPredictions[d]
+		])
+		.sort(([, a], [, b]) => (b as number) - (a as number))
+		.map(([d]) => d);
+	$: teamsByAlgo = Object.values(Teams)
+		.map((t) => [t, mode === 'User' ? userTeamPredictions[t] : algoTeamPredictions[t]])
+		.sort(([, a], [, b]) => (b as number) - (a as number))
+		.map(([t]) => t);
+
+	// how do we re-order the drivers?
+	const promote = (driver: Drivers) => {
+		const driverIndex = userDriverRankings.indexOf(driver);
+		if (driverIndex <= 0) return;
+		const demotedDriver = userDriverRankings[driverIndex - 1];
+		userDriverRankings[driverIndex - 1] = driver;
+		userDriverRankings[driverIndex] = demotedDriver;
+	};
+	const demote = (driver: Drivers) => {
+		const driverIndex = userDriverRankings.indexOf(driver);
+		if (driverIndex >= userDriverRankings.length - 1) return;
+		const promotedDriver = userDriverRankings[driverIndex + 1];
+		userDriverRankings[driverIndex + 1] = driver;
+		userDriverRankings[driverIndex] = promotedDriver;
+	};
+
+	// What page are we on?
+	let page = 0;
+	let pageSize = 50;
+	let maxPage = Math.ceil(plays.length / pageSize);
+
+	// What does the user wanna hide?
+	let hide = {};
+
+	// Figure out what the user is searching for
 	let searchString = '';
 	$: searchArray =
 		searchString !== ''
@@ -37,44 +100,78 @@
 					.sort()
 			: [];
 	$: isSearchEnabled = searchString !== '';
-	$: filteredPlays = plays.filter((play) => {
-		const areKeysUnfiltered = play.keys.every((key) => !filters[key]);
-		const areKeysInSearchArray =
-			!isSearchEnabled ||
-			searchArray.every((searchKey) =>
-				play.keys.some((key) => key.toLowerCase().startsWith(searchKey))
-			);
-		return areKeysUnfiltered && areKeysInSearchArray;
-	});
+
+	// filter out hidden & searched-by plays
+	$: filteredPlays = plays
+		.filter((play) => {
+			const areKeysUnfiltered = play.keys.every((key) => !hide[key]);
+			const areKeysInSearchArray =
+				!isSearchEnabled ||
+				searchArray.every((searchKey) =>
+					play.keys.some((key) => key.toLowerCase().startsWith(searchKey))
+				);
+			return areKeysUnfiltered && areKeysInSearchArray;
+		})
+		.sort((a, b) =>
+			mode === 'Algo'
+				? b.algoPredictionPoints - a.algoPredictionPoints
+				: b.userPredictionPoints - a.userPredictionPoints
+		);
+	$: slicedPlays = filteredPlays.slice(page * pageSize, pageSize);
 </script>
 
 <main>
 	<h1>Formula Fun! {raceName}!</h1>
+	<label class="user-mode">
+		<input type="checkbox" bind:checked={isUserModeChecked} />
+		User Mode
+	</label>
 	<section id="drivers">
 		<h2>Drivers</h2>
 		<table>
 			<thead>
 				<tr>
-					<th>Filter</th>
+					<th>Hide</th>
 					<th>Driver</th>
-					<th>Price</th>
-					<th>Bonus</th>
-					<th>Prediction</th>
+					<th>&euro;</th>
+					<th>{mode}</th>
+					<th>&times;</th>
+					{#if mode === 'User'}
+						<th />
+						<th />
+					{/if}
 				</tr>
-			</thead><tbody>
-				{#each Object.values(Drivers) as driver}
-					<tr style="background-color:{teamColors[driverTeams[driver]]}">
+			</thead>
+			<tbody>
+				{#each driversByAlgo as driver (driver)}
+					<tr
+						style="background-color:{teamColors[driverTeams[driver]]}"
+						animate:flip={{ duration: 250 }}
+					>
 						<td>
-							<input type="checkbox" bind:checked={filters[driver]} />
+							<input type="checkbox" bind:checked={hide[driver]} />
 						</td>
 						<td>
 							<strong>{driver}</strong>
 							<br />
-							<i>{driverTeams[driver]}</i>
+							<small><i>{driverTeams[driver]}</i></small>
 						</td>
 						<td>&euro;{prices[driver].price}</td>
+						{#if mode === 'Algo'}
+							<td>{algoDriverPredictions[driver].toFixed(2)}</td>
+						{:else if mode === 'User'}
+							<td>{userDriverPredictions[driver]}</td>
+						{/if}
 						<td>&times;{prices[driver].bonus}</td>
-						<td>{predictions[driver].pricePrediction.toFixed(2)}</td>
+						{#if mode === 'User'}
+							<td>
+								<button aria-label="Promote Driver" on:click={() => promote(driver)}>&#9650;</button
+								>
+							</td>
+							<td>
+								<button aria-label="Demote Driver" on:click={() => demote(driver)}>&#9660;</button>
+							</td>
+						{/if}
 					</tr>
 				{/each}
 			</tbody>
@@ -86,20 +183,24 @@
 		<table>
 			<thead>
 				<tr>
-					<th>Filter</th>
+					<th>Hide</th>
 					<th>Constructor</th>
 					<th>Price</th>
-					<th>Prediction</th>
+					<th>{mode}</th>
 				</tr>
 			</thead><tbody>
-				{#each Object.values(Teams) as team}
+				{#each teamsByAlgo as team}
 					<tr style="background-color:{teamColors[team]}">
 						<td>
-							<input type="checkbox" bind:checked={filters[team]} />
+							<input type="checkbox" bind:checked={hide[team]} />
 						</td>
 						<td>{team}</td>
 						<td>&euro;{prices[team].price}</td>
-						<td>{predictions[team].pricePrediction.toFixed(2)}</td>
+						{#if mode === 'Algo'}
+							<td>{algoTeamPredictions[team].toFixed(2)}</td>
+						{:else if mode === 'User'}
+							<td>{userTeamPredictions[team].toFixed(2)}</td>
+						{/if}
 					</tr>
 				{/each}
 			</tbody>
@@ -120,11 +221,11 @@
 				<tr>
 					<th>Pick</th>
 					<th>Price</th>
-					<th>Prediction</th>
+					<th>{mode}</th>
 				</tr>
 			</thead>
 			<tbody>
-				{#each Object.values(filteredPlays).slice(0, 250) as play}
+				{#each Object.values(slicedPlays) as play}
 					<tr>
 						<td>
 							{#each play.keys as key, index}
@@ -134,7 +235,11 @@
 							{/each}
 						</td>
 						<td>&euro;{play.price}</td>
-						<td>{play.predictionPoints.toFixed(2)}</td>
+						{#if mode === 'Algo'}
+							<td>{play.algoPredictionPoints.toFixed(2)}</td>
+						{:else if mode === 'User'}
+							<td>{play.userPredictionPoints.toFixed(2)}</td>
+						{/if}
 					</tr>
 				{/each}
 			</tbody>
@@ -159,12 +264,18 @@
 	td {
 		padding: 0.125em 0.25em;
 	}
-	input {
+	input:not([type='checkbox']),
+	button {
 		border: 2px solid currentColor;
 		background: none;
 		padding: 0.25em;
 		font: inherit;
 		color: inherit;
+		width: 100%;
+	}
+	button:active {
+		background: white;
+		color: #182428;
 	}
 
 	main {
@@ -180,6 +291,7 @@
 		}
 	}
 	h1,
+	.user-mode,
 	#plays {
 		grid-column: 1 / -1;
 	}
