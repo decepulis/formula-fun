@@ -78,7 +78,6 @@
 	// What page are we on?
 	let page = 0;
 	let pageSize = 50;
-	let maxPage = Math.ceil(plays.length / pageSize);
 
 	// What does the user wanna hide?
 	let hide = {};
@@ -117,7 +116,7 @@
 				? b.algoPredictionPoints - a.algoPredictionPoints
 				: b.userPredictionPoints - a.userPredictionPoints
 		);
-	$: slicedPlays = filteredPlays.slice(page * pageSize, pageSize);
+	$: slicedPlays = filteredPlays.slice(page * pageSize, (page + 1) * pageSize);
 </script>
 
 <main>
@@ -209,13 +208,15 @@
 
 	<section id="plays">
 		<h2>Plays ({filteredPlays.length})</h2>
-		<input
-			type="text"
-			bind:value={searchString}
-			placeholder="Search Plays"
-			aria-label="search"
-			style="width:100%"
-		/>
+		<input type="text" bind:value={searchString} placeholder="Search Plays" aria-label="search" />
+		<div class="pagination">
+			<button on:click={() => (page = page - 1)} disabled={page === 0}>&#9664;</button>
+			Page {page + 1} of {Math.ceil(filteredPlays.length / pageSize)}
+			<button
+				on:click={() => (page = page + 1)}
+				disabled={page === Math.ceil(filteredPlays.length / pageSize) - 1}>&#9654;</button
+			>
+		</div>
 		<table id="plays">
 			<thead>
 				<tr>
@@ -257,6 +258,9 @@
 		margin: 0;
 		padding: 2em 1em;
 	}
+	:global(*) {
+		box-sizing: border-box;
+	}
 
 	table {
 		width: 100%;
@@ -273,7 +277,10 @@
 		color: inherit;
 		width: 100%;
 	}
-	button:active {
+	button:not([disabled]) {
+		cursor: pointer;
+	}
+	button:not([disabled]):active {
 		background: white;
 		color: #182428;
 	}
@@ -292,7 +299,15 @@
 	}
 	h1,
 	.user-mode,
+	.pagination,
 	#plays {
 		grid-column: 1 / -1;
+	}
+	.pagination {
+		display: grid;
+		align-items: center;
+		justify-items: center;
+		gap: 1rem;
+		grid-template-columns: 1fr 3fr 1fr;
 	}
 </style>
