@@ -273,18 +273,14 @@ export const getPlays = (
 
 				const playABC = calculatePlay([keyA, driverB, driverC]);
 				const idC = calculateId([keyA, driverB, driverC]);
-
 				playsById[idC] = playABC;
 
 				for (const driverD of Object.values(Drivers)) {
 					// Pick 4
-					// remember, we can only pick 3 if keyA was a team and not a driver
-					if (Object.keys(Teams).includes(keyA)) continue;
 					if (keyA === driverD || driverB === driverD || driverC === driverD) continue;
 
 					const playABCD = calculatePlay([keyA, driverB, driverC, driverD]);
 					const idD = calculateId([keyA, driverB, driverC, driverD]);
-
 					playsById[idD] = playABCD;
 				}
 			}
