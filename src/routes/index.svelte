@@ -15,7 +15,7 @@
 
 	import type { Race } from '../types';
 
-	const raceName = 'Belgium';
+	const raceName = 'Netherlands';
 	const race = races.find(({ name }) => name === raceName) as Race;
 
 	const scoring = [20, 18, 16, 14, 12, 10, 8, 6, 4, 3, 2, 1];
