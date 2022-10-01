@@ -30,7 +30,7 @@
 	let userDriverRankings = initializeUserDriverRankings(algoDriverPredictions);
 	let userDriverPredictions = getUserDriverPredictions(userDriverRankings, scoring);
 	$: userDriverPredictions = getUserDriverPredictions(userDriverRankings, scoring);
-	const userTeamPredictions = getTeamPredictions(userDriverPredictions);
+	$: userTeamPredictions = getTeamPredictions(userDriverPredictions);
 
 	const plays = getPlays(
 		prices,
