@@ -13,14 +13,14 @@
 		getPlays
 	} from '../utils/calculators';
 
-	import type { Race } from '../types';
+	import type { OddsTable, Race } from '../types';
 
 	const raceName = 'Japan';
 	const race = races.find(({ name }) => name === raceName) as Race;
 
 	const scoring = [20, 18, 16, 14, 12, 10, 8, 6, 4, 3, 2, 1];
 	const odds = race.odds;
-	const percents = getPercents(odds);
+	const percents = getPercents(odds as OddsTable);
 	const adjustment = getAdjustment(percents);
 	const prices = getPrices(percents, adjustment);
 
@@ -32,7 +32,7 @@
 	$: userDriverPredictions = getUserDriverPredictions(userDriverRankings, scoring);
 	$: userTeamPredictions = getTeamPredictions(userDriverPredictions);
 
-	const plays = getPlays(
+	$: plays = getPlays(
 		prices,
 		algoDriverPredictions,
 		algoTeamPredictions,
