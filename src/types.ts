@@ -1,4 +1,4 @@
-import type { Drivers, Teams, Keys } from './2022';
+import type { Drivers, Teams, Keys } from './2023';
 
 export interface OddsRow {
 	o1: number;

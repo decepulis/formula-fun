@@ -1,5 +1,5 @@
-import { Drivers, Teams, teamDrivers } from '../2022';
-import type { Keys } from '../2022';
+import { Drivers, Teams, teamDrivers } from '../2023';
+import type { Keys } from '../2023';
 import type {
 	OddsTable,
 	PercentTable,
