@@ -60,10 +60,10 @@ export const driverTeams: Record<Drivers, Teams> = {
 	[Drivers.Sainz]: Teams.Ferrari,
 	[Drivers.Piastri]: Teams.McLaren,
 	[Drivers.Norris]: Teams.McLaren,
-	[Drivers.Stroll]: Teams.Alpine,
-	[Drivers.Alonso]: Teams.Alpine,
-	[Drivers.Gasly]: Teams.AstonMartin,
-	[Drivers.Ocon]: Teams.AstonMartin,
+	[Drivers.Stroll]: Teams.AstonMartin,
+	[Drivers.Alonso]: Teams.AstonMartin,
+	[Drivers.Gasly]: Teams.Alpine,
+	[Drivers.Ocon]: Teams.Alpine,
 	[Drivers.DeVries]: Teams.AlphaTauri,
 	[Drivers.Tsunoda]: Teams.AlphaTauri,
 	[Drivers.Bottas]: Teams.AlfaRomeo,
@@ -153,6 +153,34 @@ export const races: Race[] = [
 			Sargeant: { o1: 200000, o3: 25000, o6: 3300, o10: 400 },
 			Hulkenberg: { o1: 150000, o3: 10000, o6: 1400, o10: 175 },
 			Magnussen: { o1: 150000, o3: 10000, o6: 1400, o10: 175 }
+		}
+	},
+	{
+		name: 'Australia'
+	},
+	{
+		name: 'Azerbaijan',
+		odds: {
+			Hamilton: { o1: 1400, o3: 160, o6: -350, o10: -450 },
+			Russell: { o1: 3300, o3: 275, o6: -300, o10: -400 },
+			Verstappen: { o1: -275, o3: -450, o6: -600, o10: -700 },
+			Perez: { o1: 400, o3: -225, o6: -500, o10: -600 },
+			Leclerc: { o1: 2800, o3: 275, o6: -300, o10: -400 },
+			Sainz: { o1: 4000, o3: 400, o6: -175, o10: -350 },
+			Piastri: { o1: 100000, o3: 10000, o6: 2000, o10: 225 },
+			Norris: { o1: 30000, o3: 3300, o6: 600, o10: 120 },
+			Stroll: { o1: 10000, o3: 600, o6: -150, o10: -300 },
+			Alonso: { o1: 1000, o3: -165, o6: -400, o10: -500 },
+			Gasly: { o1: 25000, o3: 4000, o6: 400, o10: -200 },
+			Ocon: { o1: 30000, o3: 4000, o6: 400, o10: -200 },
+			DeVries: { o1: 200000, o3: 20000, o6: 3300, o10: 400 },
+			Tsunoda: { o1: 100000, o3: 20000, o6: 2500, o10: 300 },
+			Bottas: { o1: 150000, o3: 25000, o6: 3300, o10: 300 },
+			Zhou: { o1: 150000, o3: 25000, o6: 3300, o10: 400 },
+			Albon: { o1: 100000, o3: 6600, o6: 1000, o10: 125 },
+			Sargeant: { o1: 200000, o3: 15000, o6: 2500, o10: 325 },
+			Hulkenberg: { o1: 100000, o3: 10000, o6: 1000, o10: 135 },
+			Magnussen: { o1: 100000, o3: 10000, o6: 1000, o10: 135 }
 		}
 	}
 ];
