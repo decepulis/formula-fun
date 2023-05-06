@@ -181,6 +181,53 @@ export const races: Race[] = [
 			Sargeant: { o1: 200000, o3: 15000, o6: 2500, o10: 325 },
 			Hulkenberg: { o1: 100000, o3: 10000, o6: 1000, o10: 135 },
 			Magnussen: { o1: 100000, o3: 10000, o6: 1000, o10: 135 }
+		},
+		results: [
+			Drivers.Perez,
+			Drivers.Verstappen,
+			Drivers.Leclerc,
+			Drivers.Alonso,
+			Drivers.Sainz,
+			Drivers.Hamilton,
+			Drivers.Stroll,
+			Drivers.Russell,
+			Drivers.Norris,
+			Drivers.Tsunoda,
+			Drivers.Piastri,
+			Drivers.Albon,
+			Drivers.Magnussen,
+			Drivers.Gasly,
+			Drivers.Ocon,
+			Drivers.Sargeant,
+			Drivers.Hulkenberg,
+			Drivers.Bottas,
+			Drivers.Zhou,
+			Drivers.DeVries
+		]
+	},
+	{
+		name: 'Miami',
+		odds: {
+			Hamilton: { o1: 2500, o3: 275, o6: -350, o10: -500 },
+			Russell: { o1: 2500, o3: 275, o6: -300, o10: -400 },
+			Verstappen: { o1: -250, o3: -500, o6: -700, o10: -900 },
+			Perez: { o1: 400, o3: -300, o6: -500, o10: -700 },
+			Leclerc: { o1: 1400, o3: -165, o6: -400, o10: -600 },
+			Sainz: { o1: 1600, o3: 175, o6: -400, o10: -600 },
+			Piastri: { o1: 100000, o3: 50000, o6: 2800, o10: 175 },
+			Norris: { o1: 6600, o3: 2500, o6: 125, o10: -250 },
+			Stroll: { o1: 10000, o3: 3300, o6: 165, o10: -200 },
+			Alonso: { o1: 2000, o3: 250, o6: -400, o10: -600 },
+			Gasly: { o1: 25000, o3: 6600, o6: 600, o10: -140 },
+			Ocon: { o1: 25000, o3: 6600, o6: 600, o10: -140 },
+			DeVries: { o1: 250000, o3: 150000, o6: 6600, o10: 450 },
+			Tsunoda: { o1: 250000, o3: 150000, o6: 6600, o10: 275 },
+			Bottas: { o1: 200000, o3: 100000, o6: 5000, o10: 350 },
+			Zhou: { o1: 200000, o3: 100000, o6: 5000, o10: 300 },
+			Albon: { o1: 100000, o3: 50000, o6: 2800, o10: 135 },
+			Sargeant: { o1: 200000, o3: 100000, o6: 5000, o10: 350 },
+			Hulkenberg: { o1: 50000, o3: 15000, o6: 1600, o10: 225 },
+			Magnussen: { o1: 50000, o3: 15000, o6: 1600, o10: 250 }
 		}
 	}
 ];
