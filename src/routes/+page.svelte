@@ -15,8 +15,11 @@
 
 	import type { OddsTable, Race } from '../types';
 
-	const raceName = 'Barcelona';
-	const race = races.find(({ name }) => name === raceName) as Race;
+	// const raceName = 'Canada';
+	// const race = races.find(({ name }) => name === raceName) as Race;
+	const lastRace = races[races.length - 1]
+	const raceName = lastRace.name
+	const race = lastRace
 
 	const scoring = [20, 18, 16, 14, 12, 10, 8, 6, 4, 3, 2, 1];
 	const odds = race.odds;
