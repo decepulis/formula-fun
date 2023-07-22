@@ -13,7 +13,7 @@ export enum Drivers {
 	Alonso = 'Alonso',
 	Gasly = 'Gasly',
 	Ocon = 'Ocon',
-	DeVries = 'DeVries/Ricciardo',
+	DeVries = 'Ricciardo',
 	Tsunoda = 'Tsunoda',
 	Bottas = 'Bottas',
 	Zhou = 'Zhou',
