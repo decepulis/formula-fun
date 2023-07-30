@@ -444,6 +444,53 @@ export const races: Race[] = [
 			[Drivers.Sargeant]: { o1: 50000, o3: 20000, o6: 5000, o10: 900 },
 			[Drivers.Hulkenberg]: { o1: 50000, o3: 10000, o6: 3300, o10: 450 },
 			[Drivers.Magnussen]: { o1: 50000, o3: 10000, o6: 3300, o10: 500 }
+		},
+		results: [
+			Drivers.Verstappen,
+			Drivers.Norris,
+			Drivers.Perez,
+			Drivers.Hamilton,
+			Drivers.Piastri,
+			Drivers.Russell,
+			Drivers.Leclerc,
+			Drivers.Sainz,
+			Drivers.Alonso,
+			Drivers.Stroll,
+			Drivers.Albon,
+			Drivers.Bottas,
+			Drivers.DeVries,
+			Drivers.Hulkenberg,
+			Drivers.Tsunoda,
+			Drivers.Zhou,
+			Drivers.Magnussen,
+			Drivers.Sargeant,
+			Drivers.Ocon,
+			Drivers.Gasly
+		]
+	},
+	{
+		name: 'Belgium',
+		odds: {
+			[Drivers.Hamilton]: { o1: 1600, o3: -150, o6: -500, o10: -800 },
+			[Drivers.Russell]: { o1: 6500, o3: 900, o6: -120, o10: -350 },
+			[Drivers.Verstappen]: { o1: -400, o3: -700, o6: -1000, o10: -1200 },
+			[Drivers.Perez]: { o1: 600, o3: -300, o6: -600, o10: -1000 },
+			[Drivers.Leclerc]: { o1: 2000, o3: 160, o6: -300, o10: -600 },
+			[Drivers.Sainz]: { o1: 4000, o3: 900, o6: -120, o10: -450 },
+			[Drivers.Piastri]: { o1: 2000, o3: 275, o6: -275, o10: -500 },
+			[Drivers.Norris]: { o1: 2800, o3: 275, o6: -300, o10: -600 },
+			[Drivers.Stroll]: { o1: 10000, o3: 10000, o6: 800, o10: -150 },
+			[Drivers.Alonso]: { o1: 10000, o3: 900, o6: 125, o10: -300 },
+			[Drivers.Gasly]: { o1: 25000, o3: 12500, o6: 1000, o10: 135 },
+			[Drivers.Ocon]: { o1: 50000, o3: 12500, o6: 1000, o10: 150 },
+			[Drivers.DeVries]: { o1: 100000, o3: 25000, o6: 3000, o10: 400 },
+			[Drivers.Tsunoda]: { o1: 20000, o3: 10000, o6: 1000, o10: 120 },
+			[Drivers.Bottas]: { o1: 50000, o3: 20000, o6: 2000, o10: 225 },
+			[Drivers.Zhou]: { o1: 150000, o3: 25000, o6: 4000, o10: 600 },
+			[Drivers.Albon]: { o1: 50000, o3: 15000, o6: 1400, o10: 150 },
+			[Drivers.Sargeant]: { o1: 200000, o3: 50000, o6: 5000, o10: 600 },
+			[Drivers.Hulkenberg]: { o1: 100000, o3: 25000, o6: 3000, o10: 600 },
+			[Drivers.Magnussen]: { o1: 50000, o3: 25000, o6: 2500, o10: 450 }
 		}
 	}
 ];
