@@ -538,6 +538,53 @@ export const races: Race[] = [
 			[Drivers.Sargeant]: { o1: 100000, o3: 15000, o6: 4000, o10: 240 },
 			[Drivers.Hulkenberg]: { o1: 200000, o3: 50000, o6: 6600, o10: 800 },
 			[Drivers.Magnussen]: { o1: 200000, o3: 50000, o6: 6600, o10: 800 }
+		},
+		results: [
+			Drivers.Verstappen,
+			Drivers.Alonso,
+			Drivers.Gasly,
+			Drivers.Perez,
+			Drivers.Sainz,
+			Drivers.Hamilton,
+			Drivers.Norris,
+			Drivers.Albon,
+			Drivers.Piastri,
+			Drivers.Ocon,
+			Drivers.Stroll,
+			Drivers.Hulkenberg,
+			Drivers.DeVries,
+			Drivers.Bottas,
+			Drivers.Tsunoda,
+			Drivers.Magnussen,
+			Drivers.Russell,
+			Drivers.Zhou,
+			Drivers.Leclerc,
+			Drivers.Sargeant
+		]
+	},
+	{
+		name: 'Italy',
+		odds: {
+			[Drivers.Hamilton]: { o1: 3300, o3: 350, o6: -200, o10: -600 },
+			[Drivers.Russell]: { o1: 5000, o3: 600, o6: -140, o10: -500 },
+			[Drivers.Verstappen]: { o1: -500, o3: -800, o6: -1000, o10: -1200 },
+			[Drivers.Perez]: { o1: 900, o3: -150, o6: -600, o10: -800 },
+			[Drivers.Leclerc]: { o1: 1400, o3: 125, o6: -400, o10: -600 },
+			[Drivers.Sainz]: { o1: 1400, o3: 125, o6: -400, o10: -600 },
+			[Drivers.Piastri]: { o1: 5000, o3: 600, o6: 135, o10: -300 },
+			[Drivers.Norris]: { o1: 3300, o3: 325, o6: -275, o10: -600 },
+			[Drivers.Stroll]: { o1: 50000, o3: 6600, o6: 1600, o10: -140 },
+			[Drivers.Alonso]: { o1: 4000, o3: 350, o6: -150, o10: -500 },
+			[Drivers.Gasly]: { o1: 100000, o3: 10000, o6: 2000, o10: 100 },
+			[Drivers.Ocon]: { o1: 100000, o3: 10000, o6: 2000, o10: 100 },
+			[Drivers.DeVries]: { o1: 100000, o3: 50000, o6: 10000, o10: 600 },
+			[Drivers.Tsunoda]: { o1: 100000, o3: 50000, o6: 10000, o10: 500 },
+			[Drivers.Bottas]: { o1: 300000, o3: 50000, o6: 20000, o10: 900 },
+			[Drivers.Zhou]: { o1: 300000, o3: 50000, o6: 20000, o10: 900 },
+			[Drivers.Albon]: { o1: 10000, o3: 900, o6: 135, o10: -350 },
+			[Drivers.Sargeant]: { o1: 100000, o3: 10000, o6: 5000, o10: 250 },
+			[Drivers.Hulkenberg]: { o1: 200000, o3: 50000, o6: 15000, o10: 800 },
+			[Drivers.Magnussen]: { o1: 200000, o3: 50000, o6: 15000, o10: 800 }
 		}
 	}
 ];
