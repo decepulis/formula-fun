@@ -726,6 +726,53 @@ export const races: Race[] = [
 			[Drivers.Sargeant]: { o1: 50000, o3: 25000, o6: 10000, o10: 1400 },
 			[Drivers.Hulkenberg]: { o1: 50000, o3: 25000, o6: 6600, o10: 1000 },
 			[Drivers.Magnussen]: { o1: 50000, o3: 25000, o6: 6600, o10: 1000 }
+		},
+		results: [
+			Drivers.Verstappen,
+			Drivers.Piastri,
+			Drivers.Norris,
+			Drivers.Russell,
+			Drivers.Leclerc,
+			Drivers.Alonso,
+			Drivers.Ocon,
+			Drivers.Bottas,
+			Drivers.Zhou,
+			Drivers.Perez,
+			Drivers.Stroll,
+			Drivers.Gasly,
+			Drivers.Albon,
+			Drivers.Magnussen,
+			Drivers.Tsunoda,
+			Drivers.Hulkenberg,
+			Drivers.DeVries,
+			Drivers.Sargeant,
+			Drivers.Hamilton,
+			Drivers.Sainz
+		]
+	},
+	{
+		name: 'Texas',
+		odds: {
+			[Drivers.Hamilton]: { o1: 2500, o3: 240, o6: -300, o10: -600 },
+			[Drivers.Russell]: { o1: 2500, o3: 300, o6: -300, o10: -600 },
+			[Drivers.Verstappen]: { o1: -450, o3: -700, o6: -1200, o10: -1800 },
+			[Drivers.Perez]: { o1: 1800, o3: 160, o6: -300, o10: -700 },
+			[Drivers.Leclerc]: { o1: 2500, o3: 350, o6: -150, o10: -500 },
+			[Drivers.Sainz]: { o1: 2800, o3: 400, o6: -150, o10: -500 },
+			[Drivers.Piastri]: { o1: 1200, o3: -110, o6: -600, o10: -800 },
+			[Drivers.Norris]: { o1: 1200, o3: -165, o6: -600, o10: -800 },
+			[Drivers.Stroll]: { o1: 50000, o3: 12500, o6: 1600, o10: 150 },
+			[Drivers.Alonso]: { o1: 6600, o3: 1200, o6: 100, o10: -500 },
+			[Drivers.Gasly]: { o1: 25000, o3: 6600, o6: 900, o10: -175 },
+			[Drivers.Ocon]: { o1: 25000, o3: 6600, o6: 900, o10: -175 },
+			[Drivers.DeVries]: { o1: 50000, o3: 25000, o6: 5000, o10: 700 },
+			[Drivers.Tsunoda]: { o1: 50000, o3: 25000, o6: 4000, o10: 300 },
+			[Drivers.Bottas]: { o1: 50000, o3: 25000, o6: 4000, o10: 350 },
+			[Drivers.Zhou]: { o1: 50000, o3: 25000, o6: 4000, o10: 400 },
+			[Drivers.Albon]: { o1: 50000, o3: 12500, o6: 1600, o10: 150 },
+			[Drivers.Sargeant]: { o1: 50000, o3: 50000, o6: 6600, o10: 1200 },
+			[Drivers.Hulkenberg]: { o1: 50000, o3: 50000, o6: 6600, o10: 350 },
+			[Drivers.Magnussen]: { o1: 50000, o3: 50000, o6: 6600, o10: 600 }
 		}
 	}
 ];
