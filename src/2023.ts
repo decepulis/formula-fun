@@ -773,6 +773,53 @@ export const races: Race[] = [
 			[Drivers.Sargeant]: { o1: 50000, o3: 50000, o6: 6600, o10: 1200 },
 			[Drivers.Hulkenberg]: { o1: 50000, o3: 50000, o6: 6600, o10: 350 },
 			[Drivers.Magnussen]: { o1: 50000, o3: 50000, o6: 6600, o10: 600 }
+		},
+		results: [
+			Drivers.Verstappen,
+			Drivers.Norris,
+			Drivers.Sainz,
+			Drivers.Perez,
+			Drivers.Russell,
+			Drivers.Gasly,
+			Drivers.Stroll,
+			Drivers.Tsunoda,
+			Drivers.Albon,
+			Drivers.Sargeant,
+			Drivers.Hulkenberg,
+			Drivers.Bottas,
+			Drivers.Zhou,
+			Drivers.Magnussen,
+			Drivers.DeVries,
+			Drivers.Hamilton,
+			Drivers.Leclerc,
+			Drivers.Alonso,
+			Drivers.Piastri,
+			Drivers.Ocon
+		]
+	},
+	{
+		name: 'Mexico',
+		odds: {
+			[Drivers.Hamilton]: { o1: 800, o3: -150, o6: -500, o10: -900 },
+			[Drivers.Russell]: { o1: 2000, o3: 175, o6: -500, o10: -700 },
+			[Drivers.Verstappen]: { o1: -350, o3: -700, o6: -1000, o10: -1400 },
+			[Drivers.Perez]: { o1: 1600, o3: 115, o6: -500, o10: -700 },
+			[Drivers.Leclerc]: { o1: 3300, o3: 600, o6: -225, o10: -600 },
+			[Drivers.Sainz]: { o1: 4000, o3: 700, o6: -125, o10: -500 },
+			[Drivers.Piastri]: { o1: 3300, o3: 600, o6: -120, o10: -500 },
+			[Drivers.Norris]: { o1: 1400, o3: 1400, o6: -500, o10: -700 },
+			[Drivers.Stroll]: { o1: 30000, o3: 6600, o6: 2500, o10: 200 },
+			[Drivers.Alonso]: { o1: 6600, o3: 2000, o6: 250, o10: -175 },
+			[Drivers.Gasly]: { o1: 25000, o3: 6600, o6: 900, o10: -110 },
+			[Drivers.Ocon]: { o1: 25000, o3: 6600, o6: 900, o10: -110 },
+			[Drivers.DeVries]: { o1: 25000, o3: 5000, o6: 1200, o10: 150 },
+			[Drivers.Tsunoda]: { o1: 50000, o3: 15000, o6: 5000, o10: 550 },
+			[Drivers.Bottas]: { o1: 25000, o3: 5000, o6: 1600, o10: 175 },
+			[Drivers.Zhou]: { o1: 50000, o3: 15000, o6: 4000, o10: 175 },
+			[Drivers.Albon]: { o1: 5000, o3: 1600, o6: 225, o10: -250 },
+			[Drivers.Sargeant]: { o1: 100000, o3: 25000, o6: 10000, o10: 800 },
+			[Drivers.Hulkenberg]: { o1: 100000, o3: 25000, o6: 10000, o10: 1200 },
+			[Drivers.Magnussen]: { o1: 200000, o3: 25000, o6: 10000, o10: 1200 }
 		}
 	}
 ];
