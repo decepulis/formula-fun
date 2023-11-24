@@ -914,6 +914,53 @@ export const races: Race[] = [
 			[Drivers.Sargeant]: { o1: 100000, o3: 25000, o6: 3300, o10: 600 },
 			[Drivers.Hulkenberg]: { o1: 50000, o3: 10000, o6: 1600, o10: 275 },
 			[Drivers.Magnussen]: { o1: 50000, o3: 10000, o6: 1600, o10: 275 }
+		},
+		results: [
+			Drivers.Verstappen,
+			Drivers.Leclerc,
+			Drivers.Perez,
+			Drivers.Ocon,
+			Drivers.Stroll,
+			Drivers.Sainz,
+			Drivers.Hamilton,
+			Drivers.Russell,
+			Drivers.Alonso,
+			Drivers.Piastri,
+			Drivers.Gasly,
+			Drivers.Albon,
+			Drivers.Magnussen,
+			Drivers.DeVries,
+			Drivers.Zhou,
+			Drivers.Sargeant,
+			Drivers.Bottas,
+			Drivers.Tsunoda,
+			Drivers.Hulkenberg,
+			Drivers.Norris
+		]
+	},
+	{
+		name: 'Abu Dhabi',
+		odds: {
+			[Drivers.Hamilton]: { o1: 1600, o3: 200, o6: -350, o10: -600 },
+			[Drivers.Russell]: { o1: 1600, o3: 200, o6: -350, o10: -600 },
+			[Drivers.Verstappen]: { o1: -400, o3: -600, o6: -800, o10: -1200 },
+			[Drivers.Perez]: { o1: 2000, o3: 125, o6: -400, o10: -600 },
+			[Drivers.Leclerc]: { o1: 1200, o3: 125, o6: -500, o10: -700 },
+			[Drivers.Sainz]: { o1: 2500, o3: 450, o6: -165, o10: -600 },
+			[Drivers.Piastri]: { o1: 3300, o3: 800, o6: 100, o10: -400 },
+			[Drivers.Norris]: { o1: 1200, o3: -200, o6: -500, o10: -800 },
+			[Drivers.Stroll]: { o1: 15000, o3: 5000, o6: 600, o10: -175 },
+			[Drivers.Alonso]: { o1: 6600, o3: 1400, o6: 175, o10: -300 },
+			[Drivers.Gasly]: { o1: 25000, o3: 10000, o6: 1000, o10: -110 },
+			[Drivers.Ocon]: { o1: 25000, o3: 10000, o6: 1000, o10: -110 },
+			[Drivers.DeVries]: { o1: 60000, o3: 30000, o6: 2500, o10: 400 },
+			[Drivers.Tsunoda]: { o1: 60000, o3: 30000, o6: 2500, o10: 400 },
+			[Drivers.Bottas]: { o1: 30000, o3: 15000, o6: 1600, o10: 200 },
+			[Drivers.Zhou]: { o1: 30000, o3: 15000, o6: 1600, o10: 200 },
+			[Drivers.Albon]: { o1: 60000, o3: 30000, o6: 2500, o10: 250 },
+			[Drivers.Sargeant]: { o1: 150000, o3: 50000, o6: 6600, o10: 900 },
+			[Drivers.Hulkenberg]: { o1: 150000, o3: 50000, o6: 6600, o10: 900 },
+			[Drivers.Magnussen]: { o1: 150000, o3: 50000, o6: 6600, o10: 900 }
 		}
 	}
 ];
